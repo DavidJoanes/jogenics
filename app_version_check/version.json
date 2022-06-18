@@ -1,6 +1,6 @@
 {
     "name": "In App Update Flutter Desktop App",
-    "version": 1.2,
+    "version": 1.0,
     "description": 
         "Flutterwave payment method available\nMinor Bug Fixes",
     "macos_file_name": "installers/macos/in_app_update_flutter.dmg",

@@ -61,7 +61,7 @@ class _AboutState extends State<About> {
 
   Future<Map<String, dynamic>> loadJsonFromGithub() async {
     final response = await http.read(Uri.parse(
-        "https://raw.githubusercontent.com/DavidJoanes/jogenics/master/app_version_check/version.json?token=GHSAT0AAAAAABT473EMUXLQ45R3SF2H6WVKYVOAMZQ"));
+        "https://raw.githubusercontent.com/DavidJoanes/jogenics/master/app_version_check/version.json?token=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"));
     return json.decode(response);
   }
 
