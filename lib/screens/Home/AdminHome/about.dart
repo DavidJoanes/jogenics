@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:JoGenics/components/app_bar.dart';
 import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/constants.dart';
-import 'package:JoGenics/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -59,7 +58,7 @@ class _AboutState extends State<About> {
 
   Future<Map<String, dynamic>> loadJsonFromGithub() async {
     final response = await http.read(Uri.parse(
-        "https://raw.githubusercontent.com/DavidJoanes/jogenics/master/app_version_check/version.json?token=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"));
+        "https://raw.githubusercontent.com/DavidJoanes/jogenics/master/app_version_check/version.json?token=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"));
     return json.decode(response);
   }
 
@@ -80,24 +79,41 @@ class _AboutState extends State<About> {
                   style: GoogleFonts.macondo(
                       textStyle: TextStyle(fontSize: size.width * 0.015))),
               SizedBox(width: size.width * 0.01),
-              TextButton(
-                  onPressed: () async {
+              RoundedButtonMain(
+                text1: 'Check',
+                text2: 'Checking..',
+                fontSize1: size.width * 0.01,
+                fontSize2: size.width * 0.008,
+                width: size.width * 0.1,
+                radius: size.width * 0.03,
+                horizontalGap: size.width * 0.01,
+                verticalGap: size.height * 0.02,
+                color: primaryColor,
+                isLoading: false,
+                function: () async {
+                  try {
                     await checkForUpdate();
-                    // showAboutDialog(
-                    //   context: context,
-                    //   applicationIcon: Image.asset('assets/icons/JOGENICS.png'),
-                    //   applicationName: 'JoGenics Hotel Management Software',
-                    //   applicationVersion: '1.0.0',
-                    //   applicationLegalese:
-                    //       'Developed by David Joanes Kemdirim (CEO, Jogenics).',
-                    // );
-                  },
-                  child: Text('Check',
-                      style: GoogleFonts.macondo(
-                          textStyle: TextStyle(
-                              fontFamily: 'Biko',
-                              color: primaryColor,
-                              fontSize: size.width * 0.015))))
+                  } on Exception catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: errorColor,
+                        content: Text("Service unavailable!")));
+                  }
+                  // showAboutDialog(
+                  //   context: context,
+                  //   applicationIcon: Image.asset('assets/icons/JOGENICS.png'),
+                  //   applicationName: 'JoGenics Hotel Management Software',
+                  //   applicationVersion: '1.0.0',
+                  //   applicationLegalese:
+                  //       'Developed by David Joanes Kemdirim (CEO, Jogenics).',
+                  // );
+                },
+              )
+              // child: Text('Check',
+              //     style: GoogleFonts.macondo(
+              //         textStyle: TextStyle(
+              //             fontFamily: 'Biko',
+              //             color: primaryColor,
+              //             fontSize: size.width * 0.015))))
             ],
           ),
           SizedBox(height: size.height * 0.05),
