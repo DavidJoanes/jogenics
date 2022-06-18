@@ -13,13 +13,15 @@ import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
+late var initialSize;
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   runApp(RestartWidget(child: MyApp()));
   doWhenWindowReady(() {
-    var initialSize = Size(800, 600);
+    initialSize = Size(800, 600);
     appWindow.size = initialSize;
     appWindow.minSize = initialSize;
     appWindow.title = "JoGenics HMS";

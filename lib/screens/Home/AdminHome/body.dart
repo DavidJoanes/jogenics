@@ -5,6 +5,7 @@ import 'package:JoGenics/components/title_case.dart';
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/constants.dart';
 import 'package:JoGenics/main.dart';
+import 'package:JoGenics/screens/Home/AdminHome/about.dart';
 import 'package:JoGenics/screens/Home/AdminHome/administrators.dart';
 import 'package:JoGenics/screens/Home/AdminHome/analysis.dart';
 import 'package:JoGenics/screens/Home/AdminHome/customer_records.dart';
@@ -48,7 +49,7 @@ class _AdminHomeState extends State<AdminHome> {
       child: Subscription(),
     ),
     Center(
-      child: Text('Coming soon..'),
+      child: About(),
     ),
   ];
 
