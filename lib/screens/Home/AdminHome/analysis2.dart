@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables
 
 import 'package:JoGenics/components/app_bar.dart';
 import 'package:JoGenics/components/title_case.dart';
@@ -199,8 +199,15 @@ class _Analysis2State extends State<Analysis2> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text(widget.month.toTitleCase(), style: TextStyle(fontFamily: 'Biko', fontSize: size.width*0.02, color: whiteColor)),
+                      SizedBox(height: size.height * 0.015),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: size.width * 0.05),
+                          child: Divider()),
+                      SizedBox(height: size.height * 0.015),
                       CircleAvatar(
-                        radius: size.width * 0.1,
+                        radius: size.width * 0.08,
                         backgroundColor: Colors.white,
                         backgroundImage: AssetImage('assets/images/money5.jpg'),
                       ),

@@ -22,20 +22,20 @@ class Analysis extends StatefulWidget {
 class _AnalysisState extends State<Analysis> {
   final years = {
     '',
-    '2022',
-    '2023',
-    '2024',
-    '2025',
-    '2026',
-    '2027',
-    '2028',
-    '2029',
-    '2030',
-    '2031',
-    '2032',
-    '2033',
-    '2034',
-    '2035'
+    // '2022',
+    // '2023',
+    // '2024',
+    // '2025',
+    // '2026',
+    // '2027',
+    // '2028',
+    // '2029',
+    // '2030',
+    // '2031',
+    // '2032',
+    // '2033',
+    // '2034',
+    // '2035'
   };
   DropdownMenuItem<String> buildYears(String Year) => DropdownMenuItem(
       value: Year,
@@ -56,6 +56,13 @@ class _AnalysisState extends State<Analysis> {
   late int october = 0;
   late int november = 0;
   late int december = 0;
+
+  fetchYears() {
+    // late List years = [];
+    for (var data in db.CustomersRecord) {
+      years.add(data['checkindate'].split('-')[2]);
+    }
+  }
 
   fetchIncome(year) {
     january = 0;
@@ -118,8 +125,9 @@ class _AnalysisState extends State<Analysis> {
 
   @override
   void initState() {
-    year = null;
     super.initState();
+    year = null;
+    fetchYears();
   }
 
   @override
@@ -388,11 +396,19 @@ class _BuildBarChartState extends State<BuildBarChart> {
             //   ScaffoldMessenger.of(context).showSnackBar(
             //       SnackBar(content: Text("Total income: $totalIncome")));
             // });
-            var month = model.selectedSeries[0]
-                .domainFn(model.selectedDatum[0].index)
-                .toLowerCase();
-            await Navigator.push(context,
-                CustomPageRoute(widget: Analysis2(month: month, year: year!)));
+            if (year != null && year != '') {
+              var month = model.selectedSeries[0]
+                  .domainFn(model.selectedDatum[0].index)
+                  .toLowerCase();
+              await Navigator.push(
+                  context,
+                  CustomPageRoute(
+                      widget: Analysis2(month: month, year: year!)));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: errorColor,
+                  content: Text("No year selected!")));
+            }
           },
         )
       ],
@@ -499,27 +515,33 @@ class _BuildRightState extends State<BuildRight> {
                 TextButton(
                   child: Text('Prev', style: TextStyle(color: primaryColor)),
                   onPressed: () {
-                    if (widget.indexForMonthsOfBestSellers <
-                        monthsOfBestSellers.length - 1) {
-                      widget.indexForMonthsOfBestSellers != 0
-                          ? setState(() {
-                              widget.indexForMonthsOfBestSellers--;
-                              chartmodel.fetchBestSellers(
-                                  monthsOfBestSellers[
-                                      widget.indexForMonthsOfBestSellers],
-                                  year);
-                              chartmodel.standard = chartmodel.map.isNotEmpty
-                                  ? chartmodel.map['standard']
-                                  : 0;
-                              chartmodel.executive = chartmodel.map.isNotEmpty
-                                  ? chartmodel.map['executive']
-                                  : 0;
-                              chartmodel.presidential =
-                                  chartmodel.map.isNotEmpty
-                                      ? chartmodel.map['presidential']
-                                      : 0;
-                            })
-                          : null;
+                    if (year != null && year != '') {
+                      if (widget.indexForMonthsOfBestSellers <
+                          monthsOfBestSellers.length - 1) {
+                        widget.indexForMonthsOfBestSellers != 0
+                            ? setState(() {
+                                widget.indexForMonthsOfBestSellers--;
+                                chartmodel.fetchBestSellers(
+                                    monthsOfBestSellers[
+                                        widget.indexForMonthsOfBestSellers],
+                                    year);
+                                chartmodel.standard = chartmodel.map.isNotEmpty
+                                    ? chartmodel.map['standard']
+                                    : 0;
+                                chartmodel.executive = chartmodel.map.isNotEmpty
+                                    ? chartmodel.map['executive']
+                                    : 0;
+                                chartmodel.presidential =
+                                    chartmodel.map.isNotEmpty
+                                        ? chartmodel.map['presidential']
+                                        : 0;
+                              })
+                            : null;
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: errorColor,
+                          content: Text("No year selected!")));
                     }
                   },
                 ),
@@ -532,27 +554,33 @@ class _BuildRightState extends State<BuildRight> {
                     style: TextStyle(color: primaryColor),
                   ),
                   onPressed: () {
-                    if (widget.indexForMonthsOfBestSellers <
-                        monthsOfBestSellers.length - 1) {
-                      widget.indexForMonthsOfBestSellers != 11
-                          ? setState(() {
-                              widget.indexForMonthsOfBestSellers++;
-                              chartmodel.fetchBestSellers(
-                                  monthsOfBestSellers[
-                                      widget.indexForMonthsOfBestSellers],
-                                  year);
-                              chartmodel.standard = chartmodel.map.isNotEmpty
-                                  ? chartmodel.map['standard']
-                                  : 0;
-                              chartmodel.executive = chartmodel.map.isNotEmpty
-                                  ? chartmodel.map['executive']
-                                  : 0;
-                              chartmodel.presidential =
-                                  chartmodel.map.isNotEmpty
-                                      ? chartmodel.map['presidential']
-                                      : 0;
-                            })
-                          : null;
+                    if (year != null && year != '') {
+                      if (widget.indexForMonthsOfBestSellers <
+                          monthsOfBestSellers.length - 1) {
+                        widget.indexForMonthsOfBestSellers != 11
+                            ? setState(() {
+                                widget.indexForMonthsOfBestSellers++;
+                                chartmodel.fetchBestSellers(
+                                    monthsOfBestSellers[
+                                        widget.indexForMonthsOfBestSellers],
+                                    year);
+                                chartmodel.standard = chartmodel.map.isNotEmpty
+                                    ? chartmodel.map['standard']
+                                    : 0;
+                                chartmodel.executive = chartmodel.map.isNotEmpty
+                                    ? chartmodel.map['executive']
+                                    : 0;
+                                chartmodel.presidential =
+                                    chartmodel.map.isNotEmpty
+                                        ? chartmodel.map['presidential']
+                                        : 0;
+                              })
+                            : null;
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: errorColor,
+                          content: Text("No year selected!")));
                     }
                   },
                 ),
