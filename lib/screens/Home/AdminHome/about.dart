@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:convert';
-import 'package:JoGenics/application.dart';
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:http/http.dart' as http;
 import 'package:JoGenics/components/app_bar.dart';
@@ -22,7 +21,7 @@ class _AboutState extends State<About> {
     final jsonVal = await loadJsonFromGithub();
     debugPrint("Response: $jsonVal");
     print(jsonVal);
-    if (jsonVal['version'] > ApplicationConfig.currentVersion) {
+    if (jsonVal['version'] > currentV) {
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -47,8 +46,7 @@ class _AboutState extends State<About> {
           builder: (context) {
             return dialog.ReturnDialog1(
               title: Text('No Update found'),
-              message:
-                  "The latest updates have been installed.",
+              message: "The latest updates have been installed.",
               color: primaryColor,
               buttonText: 'Ok',
               onPressed: () {
