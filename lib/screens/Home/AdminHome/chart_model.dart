@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print, avoid_function_literals_in_foreach_calls
 
 import 'dart:math';
 import 'package:JoGenics/db.dart' as db;

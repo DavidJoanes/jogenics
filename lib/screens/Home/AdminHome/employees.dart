@@ -274,6 +274,7 @@ class _EmployeesState extends State<Employees> {
                                   });
                                   Navigator.of(context).pop();
                                   showDialog(
+                                    barrierDismissible: false,
                                       context: context,
                                       builder: (context) {
                                         return Center(
@@ -643,7 +644,7 @@ class _EmployeesState extends State<Employees> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.47,
+      height: size.height * 0.5,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(

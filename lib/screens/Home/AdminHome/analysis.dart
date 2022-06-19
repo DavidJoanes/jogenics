@@ -1,5 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, must_be_immutable, library_private_types_in_public_api, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, must_be_immutable, library_private_types_in_public_api, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'dart:math';
 import 'package:JoGenics/components/custom_page_route.dart';
 import 'package:JoGenics/components/title_case.dart';
@@ -22,20 +25,6 @@ class Analysis extends StatefulWidget {
 class _AnalysisState extends State<Analysis> {
   final years = {
     '',
-    // '2022',
-    // '2023',
-    // '2024',
-    // '2025',
-    // '2026',
-    // '2027',
-    // '2028',
-    // '2029',
-    // '2030',
-    // '2031',
-    // '2032',
-    // '2033',
-    // '2034',
-    // '2035'
   };
   DropdownMenuItem<String> buildYears(String Year) => DropdownMenuItem(
       value: Year,
@@ -388,16 +377,9 @@ class _BuildBarChartState extends State<BuildBarChart> {
       selectionModels: [
         charts.SelectionModelConfig(
           changedListener: (model) async {
-            // setState(() {
-            //   var totalIncome = model.selectedSeries[0]
-            //       // .domainFn(model.selectedDatum[0].index)
-            //       .measureFn(model.selectedDatum[0].index)
-            //       .toString();
-            //   ScaffoldMessenger.of(context).showSnackBar(
-            //       SnackBar(content: Text("Total income: $totalIncome")));
-            // });
             if (year != null && year != '') {
               var month = model.selectedSeries[0]
+                  //       .measureFn(model.selectedDatum[0].index)
                   .domainFn(model.selectedDatum[0].index)
                   .toLowerCase();
               await Navigator.push(
@@ -470,6 +452,144 @@ class _BuildRightState extends State<BuildRight> {
           measureFn: (chartmodel.PieChartModel series, _) => series.total,
           colorFn: (chartmodel.PieChartModel series, _) => series.color),
     ];
+  }
+
+  downloadEmployeesRecord() async {
+    final downloadFilePathForEmployees =
+        "${Directory.current.path}/downloads/employees.csv";
+    late List liveData = [];
+    late List liveData2 = [];
+
+    final List employeesHeader = [
+      [
+        'Hotel',
+        'First Name',
+        'Last Name',
+        'Gender',
+        'Email Address',
+        'Nationality',
+        'State of Origin',
+        'Phone Number',
+        'Home Address',
+        'Date of Employment',
+        'Designation',
+        'Password',
+      ]
+    ];
+    List<List<dynamic>> employeesRow = [];
+
+    await db.fetchEmployees();
+    int len2 = db.Employees.length + 1;
+    for (var data in db.Employees) {
+      liveData.add(data['hotel']);
+      liveData.add(data['firstname']);
+      liveData.add(data['lastname']);
+      liveData.add(data['gender']);
+      liveData.add(data['emailaddress']);
+      liveData.add(data['nationality']);
+      liveData.add(data['stateoforigin']);
+      liveData.add(data['phonenumber']);
+      liveData.add(data['homeaddress'].toString());
+      liveData.add(data['dateofemployment']);
+      liveData.add(data['designation']);
+      liveData.add(data['password']);
+    }
+    late var x = 0;
+    late var y = 12;
+    for (var i = 1; i < len2; i += 1) {
+      if (i == 1) {
+        liveData2.add(liveData.sublist(x, y));
+      } else if (i > 1) {
+        x += 12;
+        y += 12;
+        liveData2.add(liveData.sublist(x, y));
+      }
+    }
+
+    for (var data in employeesHeader) {
+      employeesRow.add(data);
+    }
+    for (var data in liveData2) {
+      employeesRow.add(data);
+    }
+    String employeesCsv = const ListToCsvConverter().convert(employeesRow);
+    File employeesCsvFile = File(downloadFilePathForEmployees);
+    employeesCsvFile.writeAsString(employeesCsv);
+  }
+
+  downloadCustomersRecord() async {
+    final downloadFilePathForCustomers =
+        "${Directory.current.path}/downloads/customers.csv";
+    late List liveData = [];
+    late List liveData2 = [];
+
+    final List customersHeader = [
+      [
+        'Customer ID',
+        'First Name',
+        'Last Name',
+        'Gender',
+        'Email Address',
+        'Phone Number',
+        'Mode of Identification',
+        'ID Number',
+        'Room Type',
+        'Room Number',
+        'Checkin',
+        'Checkout',
+        'Bill Type',
+        'Discount',
+        'Mode of Payment',
+        'POS Ref/Confirmation',
+        'Duration',
+        'Total Paid (${db.HotelCurrency.toUpperCase()})'
+      ]
+    ];
+    List<List<dynamic>> customersRow = [];
+
+    await db.fetchCustomersRecord();
+    int len = db.CustomersRecord.length + 1;
+    for (var data in db.CustomersRecord) {
+      liveData.add(data['customerid']);
+      liveData.add(data['firstname']);
+      liveData.add(data['lastname']);
+      liveData.add(data['gender']);
+      liveData.add(data['emailaddress']);
+      liveData.add(data['phonenumber']);
+      liveData.add(data['modeofidentification']);
+      liveData.add(data['idnumber']);
+      liveData.add(data['roomtype']);
+      liveData.add(data['roomnumber']);
+      liveData.add(data['checkindate']);
+      liveData.add(data['checkoutdate']);
+      liveData.add(data['billtype']);
+      liveData.add(data['discount']);
+      liveData.add(data['modeofpayment']);
+      liveData.add(data['posreferenceorconfirmation']);
+      liveData.add(data['duration']);
+      liveData.add(data['totalcost']);
+    }
+    late var x = 0;
+    late var y = 18;
+    for (var i = 1; i < len; i += 1) {
+      if (i == 1) {
+        liveData2.add(liveData.sublist(x, y));
+      } else if (i > 1) {
+        x += 18;
+        y += 18;
+        liveData2.add(liveData.sublist(x, y));
+      }
+    }
+
+    for (var data in customersHeader) {
+      customersRow.add(data);
+    }
+    for (var data in liveData2) {
+      customersRow.add(data);
+    }
+    String customersCsv = const ListToCsvConverter().convert(customersRow);
+    File customersCsvFile = File(downloadFilePathForCustomers);
+    customersCsvFile.writeAsString(customersCsv);
   }
 
   @override
@@ -617,7 +737,20 @@ class _BuildRightState extends State<BuildRight> {
                     style: TextStyle(
                         color: primaryColor, fontSize: size.width * 0.012),
                   ),
-                  onPressed: () async {},
+                  onPressed: () async {
+                    showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) {
+                          return Center(child: CircularProgressIndicator());
+                        });
+                    await downloadCustomersRecord();
+                    await downloadEmployeesRecord();
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: primaryColor2,
+                        content: Text("Operation succeeded.. Path: downloads/")));
+                  },
                 ),
               ],
             ),

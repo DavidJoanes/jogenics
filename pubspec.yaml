@@ -62,12 +62,16 @@ dependencies:
   mailto: ^2.0.0
   jiffy: ^5.0.0
   collection: ^1.16.0
+  csv: any
   dio: ^4.0.6
+  # google_sign_in: ^5.3.3
+  # googleapis: any
+  # googleapis_auth: any
   # image_picker: ^0.7.4
   # image_cropper: ^2.0.0
   # crop: ^0.5.2
   # image_picker_web: ^2.1.1
-  firebase_core: ^1.17.1
+  # firebase_core: ^1.17.1
   # paystack_flutter: ^0.0.2
   # async: ^2.5.0
 

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, unused_catch_clause, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, unused_catch_clause, use_build_context_synchronously, non_constant_identifier_names
 
 import 'package:JoGenics/components/rounded_password_field.dart';
 import 'package:JoGenics/db.dart' as db;

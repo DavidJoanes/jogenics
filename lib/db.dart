@@ -22,6 +22,8 @@ late bool registeredJoGenics = false;
 late String AccountName = "David Joanes Kemdirim";
 late String AccountNumber = "0164970385";
 late String Bank = "Guaranty Trust Bank";
+late String LatestAppVersion = '';
+late String LatestAppVersionDescription = '';
 
 // SignUp, SignIn and Subscription section
 late String CompanyEmailAddress = 'jogenics@gmail.com';
@@ -549,6 +551,8 @@ fetchHotelData() async {
       SubscriptionDate = check[0]['subscriptiondate'];
       SubscriptionExpiryDate = check[0]['subscriptionexpirydate'];
       SubscriptionType = check[0]['subscriptiontype'];
+      LatestAppVersion = check[0]['appversion'];
+      LatestAppVersionDescription = check[0]['updatedescription'];
     } else {
       return false;
     }
@@ -1043,8 +1047,7 @@ insertCheckInCheckOutTimeStamp(
   try {
     final insert = await dbClient.insert(<String, dynamic>{
       'employee': employee,
-      'alert':
-          "$message $firstname $lastname.",
+      'alert': "$message $firstname $lastname.",
       'checkindate': checkindate,
       'checkoutdate': checkoutdate,
       'billtype': billtype,
@@ -1111,7 +1114,6 @@ insertUpdateTimeStamp(
     return 'No internet';
   }
 }
-
 
 // Customer Records Tab
 fetchCustomersRecord() async {

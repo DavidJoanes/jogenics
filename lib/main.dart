@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, must_be_immutable
+// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, must_be_immutable, prefer_typing_uninitialized_variables
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/components/logout.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:JoGenics/screens/Home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
 late var initialSize;
 
@@ -39,7 +39,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WindowListener {
-  final Future<FirebaseApp> initializationFirebase = Firebase.initializeApp();
+  // final Future<FirebaseApp> initializationFirebase = Firebase.initializeApp();
 
   @override
   void initState() {
@@ -120,23 +120,23 @@ class _MyAppState extends State<MyApp> with WindowListener {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'JoGenics Hotel Management System',
-      home: FutureBuilder(
-        future: initializationFirebase,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            print('Error');
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Scaffold(
-              body: MainWindow(backButton: Text(''), child: Home()),
-            );
-          }
-          return CircularProgressIndicator();
-        },
-      )
-      // home: Scaffold(
-      //   body: MainWindow(backButton: Text(''), child: Home()),
-      // ),
+      // home: FutureBuilder(
+      //   future: initializationFirebase,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.hasError) {
+      //       print('Error');
+      //     }
+      //     if (snapshot.connectionState == ConnectionState.done) {
+      //       return Scaffold(
+      //         body: MainWindow(backButton: Text(''), child: Home()),
+      //       );
+      //     }
+      //     return CircularProgressIndicator();
+      //   },
+      // )
+      home: Scaffold(
+        body: MainWindow(backButton: Text(''), child: Home()),
+      ),
     );
   }
 }

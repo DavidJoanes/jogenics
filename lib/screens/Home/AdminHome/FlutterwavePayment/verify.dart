@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, avoid_print, prefer_const_constructors
+// ignore_for_file: non_constant_identifier_names, avoid_print, prefer_const_constructors, prefer_typing_uninitialized_variables
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/constants.dart';
 import 'package:flutter/material.dart';

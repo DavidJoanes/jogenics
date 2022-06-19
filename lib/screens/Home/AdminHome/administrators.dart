@@ -330,7 +330,7 @@ class _AdministratorsState extends State<Administrators> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.6,
+      height: size.height * 0.63,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(
