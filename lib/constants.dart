@@ -16,7 +16,7 @@ const navyBlueColor = Color.fromARGB(255, 26, 34, 46);
 const transparentColor = Colors.transparent;
 const transparentColor2 = Color.fromARGB(77, 0, 0, 0);
 const customBackgroundColor = Color.fromARGB(255, 242, 242, 242);
-const double currentV = 1.0;
+const double currentV = 1.1;
 String? hotel;
 String? gender;
 String? nationality;
