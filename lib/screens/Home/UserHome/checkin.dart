@@ -1201,6 +1201,8 @@ class _CheckInState extends State<CheckIn> {
                                       onPressed: () async {
                                         setState(() {
                                           generateCustomerID();
+                                          isSearchForUpdate = null;
+                                          calculateClicked = null;
                                           firstNameController.text = '';
                                           lastNameController.text = '';
                                           gender = null;
