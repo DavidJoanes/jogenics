@@ -14,6 +14,7 @@ import 'package:JoGenics/constants.dart';
 import 'package:data_table_2/data_table_2.dart';
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Administrators extends StatefulWidget {
   const Administrators({Key? key}) : super(key: key);
@@ -237,6 +238,51 @@ class _AdministratorsState extends State<Administrators> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: errorColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.delete),
+            label: 'Delete admin',
+            onTap: () async {
+              await deleteRecord();
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search admin',
+            onTap: () async {
+              final form = _formKey.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  isSearchAdmin = true;
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Please wait..")));
+              setState(() {
+                emailController.text = '';
+                isSearchAdmin = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Administrators", blackColor, true),
       body: Column(
@@ -253,76 +299,23 @@ class _AdministratorsState extends State<Administrators> {
   Widget buildSearchArea(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.2,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
-        child: Row(
-          children: [
-            Form(
-                key: _formKey,
-                child: RoundedInputFieldMain(
-                    controller: emailController,
-                    width: size.width * 0.21,
-                    horizontalGap: size.width * 0.01,
-                    verticalGap: size.height * 0.001,
-                    radius: size.width * 0.005,
-                    mainText: '',
-                    labelText: 'Search by email address',
-                    icon: Icons.email,
-                    isEnabled: true,
-                    onChanged: (value) {
-                      value = emailController.text.trim();
-                    })),
-            SizedBox(width: size.width * 0.02),
-            RoundedButtonMain(
-                text1: 'Search',
-                text2: 'Searching..',
-                fontSize1: size.width * 0.01,
-                fontSize2: size.width * 0.008,
-                width: size.width * 0.1,
+      height: size.height * 0.13,
+      child: Center(
+        child: Form(
+            key: _formKey,
+            child: RoundedInputFieldMain(
+                controller: emailController,
+                width: size.width * 0.21,
                 horizontalGap: size.width * 0.01,
-                verticalGap: size.height * 0.02,
-                radius: size.width * 0.02,
-                isLoading: false,
-                function: () async {
-                  final form = _formKey.currentState!;
-                  if (form.validate()) {
-                    setState(() {
-                      isSearchAdmin = true;
-                    });
-                  }
-                }),
-            SizedBox(width: size.width * 0.02),
-            RoundedButtonMain(
-                text1: 'Delete',
-                text2: 'Deleting..',
-                fontSize1: size.width * 0.01,
-                fontSize2: size.width * 0.008,
-                width: size.width * 0.1,
-                horizontalGap: size.width * 0.01,
-                verticalGap: size.height * 0.02,
-                radius: size.width * 0.02,
-                isLoading: false,
-                function: () async {
-                  await deleteRecord();
-                  // final String userData = selectedData.map((e) => e).join(', ');
-                  // ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(content: Text("Selected users: $userData")));
-                }),
-            SizedBox(width: size.width * 0.02),
-            IconButton(
-                icon: Icon(Icons.refresh,
-                    size: size.width * 0.02, color: primaryColor),
-                onPressed: () async {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text("Please wait..")));
-                  setState(() {
-                    emailController.text = '';
-                    isSearchAdmin = null;
-                  });
-                }),
-          ],
-        ),
+                verticalGap: size.height * 0.001,
+                radius: size.width * 0.005,
+                mainText: '',
+                labelText: 'Search by email address',
+                icon: Icons.email,
+                isEnabled: true,
+                onChanged: (value) {
+                  value = emailController.text.trim();
+                })),
       ),
     );
   }
@@ -330,7 +323,7 @@ class _AdministratorsState extends State<Administrators> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.63,
+      height: size.height * 0.68,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(
@@ -350,6 +343,12 @@ class _AdministratorsState extends State<Administrators> {
                         bottomMargin: 20,
                         showBottomBorder: true,
                         minWidth: size.width * 0.91,
+                        dataRowColor: MaterialStateColor.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.selected)
+                                    ? primaryColor
+                                    : customBackgroundColor),
+                        showCheckboxColumn: false,
                         columns: <DataColumn>[
                           DataColumn(label: Text('First Name')),
                           DataColumn(label: Text('Last Name')),

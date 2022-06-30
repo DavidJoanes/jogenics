@@ -10,6 +10,7 @@ import 'package:JoGenics/constants.dart';
 import 'package:data_table_2/data_table_2.dart';
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 
 class CustomerRecords extends StatefulWidget {
@@ -495,6 +496,122 @@ class _CustomerRecordsState extends State<CustomerRecords> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        overlayOpacity: 0.4,
+        children: [
+          // SpeedDialChild(
+          //   backgroundColor: errorColor,
+          //   foregroundColor: whiteColor,
+          //   child: Icon(Icons.delete),
+          //   label: 'Delete record',
+          //   onTap: () async {
+          //     await deleteRecord();
+          //   },
+          // ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.calendar_month_rounded),
+            label: 'Search by date (Time stamp)',
+            onTap: () async {
+              showDatePicker(
+                      context: context,
+                      initialDate: timeStampDate,
+                      firstDate: DateTime(1990),
+                      lastDate: DateTime(2100))
+                  .then((date) => setState(() {
+                        timeStampDate = date!;
+                        convertDateTimeDisplay2(timeStampDate.toString());
+                        isSearchEmployeeTimeStamp1 = 'searchByDate';
+                      }));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search by employee (Time stamp)',
+            onTap: () async {
+              final form = _formKeyEmployeeFullName.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  isSearchEmployeeTimeStamp1 = 'true';
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh (Time stamp)',
+            onTap: () async {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Please wait..")));
+              setState(() {
+                employeeFullNameController.text = '';
+                isSearchEmployeeTimeStamp1 = null;
+                timeStampDate1 = '';
+                convertDateTimeDisplay2(timeStampDate.toString());
+              });
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.calendar_month_rounded),
+            label: 'Search by date (Customers record)',
+            onTap: () async {
+              showDatePicker(
+                      context: context,
+                      initialDate: dateOfCheckin,
+                      firstDate: DateTime(1990),
+                      lastDate: DateTime(2100))
+                  .then((date) => setState(() {
+                        dateOfCheckin = date!;
+                        convertDateTimeDisplay1(dateOfCheckin.toString());
+                        selectedData.clear();
+                        isSearchCustomers = 'searchByDate';
+                      }));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search by last name (Customers record)',
+            onTap: () async {
+              final form = _formKeyLastName.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchCustomers = 'true';
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh (Customers record)',
+            onTap: () async {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Please wait..")));
+              setState(() {
+                lastNameController.text = '';
+                isSearchCustomers = null;
+                dateOfCheckin1 = '';
+                convertDateTimeDisplay1(dateOfCheckin.toString());
+                selectedData.clear();
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Records", blackColor, true),
       body: SingleChildScrollView(
@@ -507,6 +624,7 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                         fontFamily: 'Biko',
                         fontWeight: FontWeight.bold,
                         fontSize: size.width * 0.02))),
+            SizedBox(height: size.height * 0.05),
             buildSearchArea(context),
             SizedBox(height: size.height * 0.01),
             buildTable1(context),
@@ -533,78 +651,33 @@ class _CustomerRecordsState extends State<CustomerRecords> {
   Widget buildSearchArea(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.3,
+      height: size.height * 0.24,
       width: size.width * 0.9,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.09),
-        child: Row(
-          children: [
-            SizedBox(
-              height: size.height * 0.22,
-              child: Column(
-                children: [
-                  Form(
-                      key: _formKeyLastName,
-                      child: RoundedInputFieldMain(
-                          controller: lastNameController,
-                          width: size.width * 0.2,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.001,
-                          radius: size.width * 0.005,
-                          mainText: '',
-                          labelText: 'Search by last name',
-                          icon: Icons.person,
-                          isEnabled: true,
-                          onChanged: (value) {
-                            value = lastNameController.text.trim();
-                          })),
-                  SizedBox(height: size.height * 0.015),
-                  Row(
-                    children: [
-                      RoundedButtonMain(
-                          text1: 'Search',
-                          text2: 'Searching...',
-                          fontSize1: size.width * 0.01,
-                          fontSize2: size.width * 0.008,
-                          width: size.width * 0.1,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.02,
-                          radius: size.width * 0.02,
-                          isLoading: false,
-                          function: () {
-                            final form = _formKeyLastName.currentState!;
-                            if (form.validate()) {
-                              setState(() {
-                                isSearchCustomers = 'true';
-                              });
-                            }
-                          }),
-                      SizedBox(width: size.width * 0.01),
-                      IconButton(
-                          icon: Icon(Icons.refresh,
-                              size: size.width * 0.02, color: primaryColor),
-                          onPressed: () async {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Please wait..")));
-                            setState(() {
-                              lastNameController.text = '';
-                              isSearchCustomers = null;
-                              dateOfCheckin1 = '';
-                              convertDateTimeDisplay1(dateOfCheckin.toString());
-                            });
-                          }),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: size.width * 0.07),
-            SizedBox(
-              height: size.height * 0.2,
-              child: Column(
+      child: Column(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Form(
+                  key: _formKeyLastName,
+                  child: RoundedInputFieldMain(
+                      controller: lastNameController,
+                      width: size.width * 0.3,
+                      horizontalGap: size.width * 0.01,
+                      verticalGap: size.height * 0.001,
+                      radius: size.width * 0.005,
+                      mainText: '',
+                      labelText: 'Search by last name',
+                      icon: Icons.person,
+                      isEnabled: true,
+                      onChanged: (value) {
+                        value = lastNameController.text.trim();
+                      })),
+              SizedBox(height: size.height * 0.01),
+              Column(
                 children: [
                   Container(
-                    width: size.width * 0.35,
+                    width: size.width * 0.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(size.width * 0.005),
                       border: Border.all(color: transparentColor, width: 2),
@@ -613,73 +686,21 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: Icon(Icons.edit_location_rounded,
-                              color: primaryColor),
-                          title: Text(
-                              dateOfCheckin1 == dateOfCheckin2
-                                  ? 'Search by date ($dateOfCheckin1)'
-                                  : dateOfCheckin2,
-                              style: TextStyle(color: Colors.black54)),
-                          trailing: IconButton(
-                            icon: Icon(Icons.calendar_month_rounded,
+                            leading: Icon(Icons.calendar_month_rounded,
                                 color: primaryColor),
-                            onPressed: () {
-                              showDatePicker(
-                                      context: context,
-                                      initialDate: dateOfCheckin,
-                                      firstDate: DateTime(1990),
-                                      lastDate: DateTime(2100))
-                                  .then((date) => setState(() {
-                                        dateOfCheckin = date!;
-                                        convertDateTimeDisplay1(
-                                            dateOfCheckin.toString());
-                              isSearchCustomers = 'searchByDate';
-                                      }));
-                            },
-                          ),
-                        ),
+                            title: Text(
+                                dateOfCheckin1 == dateOfCheckin2
+                                    ? 'Date: ($dateOfCheckin1)'
+                                    : dateOfCheckin2,
+                                style: TextStyle(color: Colors.black54))),
                       ],
                     ),
                   ),
-                  SizedBox(height: size.height * 0.015),
-                  // Row(
-                  //   children: [
-                      // RoundedButtonMain(
-                      //     text1: 'Search',
-                      //     text2: 'Searching...',
-                      //     fontSize1: size.width * 0.01,
-                      //     fontSize2: size.width * 0.008,
-                      //     width: size.width * 0.1,
-                      //     horizontalGap: size.width * 0.01,
-                      //     verticalGap: size.height * 0.02,
-                      //     radius: size.width * 0.02,
-                      //     isLoading: false,
-                      //     function: () {
-                      //       setState(() {
-                      //         isSearchCustomers = 'searchByDate';
-                      //       });
-                      //     }),
-                      // SizedBox(width: size.width * 0.01),
-                  //     RoundedButtonMain(
-                  //         text1: 'Delete',
-                  //         text2: 'Deleting...',
-                  //         fontSize1: size.width * 0.01,
-                  //         fontSize2: size.width * 0.008,
-                  //         width: size.width * 0.1,
-                  //         horizontalGap: size.width * 0.01,
-                  //         verticalGap: size.height * 0.02,
-                  //         radius: size.width * 0.02,
-                  //         isLoading: false,
-                  //         function: () async {
-                  //           await deleteRecord();
-                  //         }),
-                  //   ],
-                  // ),
                 ],
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -782,8 +803,8 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                   ]
                                 : <DataRow>[
                                     for (var item in liveData2)
-                                      if (item[2] ==
-                                          lastNameController.text.trim())
+                                      if (item[2].startsWith(
+                                          lastNameController.text.trim()))
                                         DataRow(
                                             selected:
                                                 selectedData.contains(item),
@@ -815,138 +836,49 @@ class _CustomerRecordsState extends State<CustomerRecords> {
   Widget buildSearchArea2(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.3,
+      height: size.height * 0.25,
       width: size.width * 0.9,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.09),
-        child: Row(
-          children: [
-            SizedBox(
-              height: size.height * 0.22,
-              child: Column(
-                children: [
-                  Form(
-                      key: _formKeyEmployeeFullName,
-                      child: RoundedInputFieldMain(
-                          controller: employeeFullNameController,
-                          width: size.width * 0.2,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.001,
-                          radius: size.width * 0.005,
-                          mainText: '',
-                          labelText: 'Search by employee',
-                          icon: Icons.person,
-                          isEnabled: true,
-                          onChanged: (value) {
-                            value = employeeFullNameController.text.trim();
-                          })),
-                  SizedBox(height: size.height * 0.015),
-                  Row(
-                    children: [
-                      RoundedButtonMain(
-                          text1: 'Search',
-                          text2: 'Searching...',
-                          fontSize1: size.width * 0.01,
-                          fontSize2: size.width * 0.008,
-                          width: size.width * 0.1,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.02,
-                          radius: size.width * 0.02,
-                          isLoading: false,
-                          function: () {
-                            final form = _formKeyEmployeeFullName.currentState!;
-                            if (form.validate()) {
-                              setState(() {
-                                isSearchEmployeeTimeStamp1 = 'true';
-                              });
-                            }
-                          }),
-                      SizedBox(width: size.width * 0.01),
-                      IconButton(
-                          icon: Icon(Icons.refresh,
-                              size: size.width * 0.02, color: primaryColor),
-                          onPressed: () async {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Please wait..")));
-                            setState(() {
-                              employeeFullNameController.text = '';
-                              isSearchEmployeeTimeStamp1 = null;
-                              timeStampDate1 = '';
-                              convertDateTimeDisplay2(timeStampDate.toString());
-                            });
-                          }),
-                    ],
-                  ),
-                ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Form(
+              key: _formKeyEmployeeFullName,
+              child: RoundedInputFieldMain(
+                  controller: employeeFullNameController,
+                  width: size.width * 0.3,
+                  horizontalGap: size.width * 0.01,
+                  verticalGap: size.height * 0.001,
+                  radius: size.width * 0.005,
+                  mainText: '',
+                  labelText: 'Search by employee',
+                  icon: Icons.person,
+                  isEnabled: true,
+                  onChanged: (value) {
+                    value = employeeFullNameController.text.trim();
+                  })),
+          SizedBox(height: size.height * 0.01),
+          Column(
+            children: [
+              Container(
+                width: size.width * 0.3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(size.width * 0.005),
+                  border: Border.all(color: transparentColor, width: 2),
+                  color: whiteColor,
+                ),
+                child: ListTile(
+                  leading:
+                      Icon(Icons.edit_location_rounded, color: primaryColor),
+                  title: Text(
+                      timeStampDate1 == timeStampDate2
+                          ? 'Date: ($timeStampDate1)'
+                          : timeStampDate2,
+                      style: TextStyle(color: Colors.black54)),
+                ),
               ),
-            ),
-            SizedBox(width: size.width * 0.07),
-            SizedBox(
-              height: size.height * 0.2,
-              child: Column(
-                children: [
-                  Container(
-                    width: size.width * 0.35,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(size.width * 0.005),
-                      border: Border.all(color: transparentColor, width: 2),
-                      color: whiteColor,
-                    ),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.edit_location_rounded,
-                              color: primaryColor),
-                          title: Text(
-                              timeStampDate1 == timeStampDate2
-                                  ? 'Search by date ($timeStampDate1)'
-                                  : timeStampDate2,
-                              style: TextStyle(color: Colors.black54)),
-                          trailing: IconButton(
-                            icon: Icon(Icons.calendar_month_rounded,
-                                color: primaryColor),
-                            onPressed: () {
-                              showDatePicker(
-                                      context: context,
-                                      initialDate: timeStampDate,
-                                      firstDate: DateTime(1990),
-                                      lastDate: DateTime(2100))
-                                  .then((date) => setState(() {
-                                        timeStampDate = date!;
-                                        convertDateTimeDisplay2(
-                                            timeStampDate.toString());
-                                      }));
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.015),
-                  Row(
-                    children: [
-                      RoundedButtonMain(
-                          text1: 'Search',
-                          text2: 'Searching...',
-                          fontSize1: size.width * 0.01,
-                          fontSize2: size.width * 0.008,
-                          width: size.width * 0.1,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.02,
-                          radius: size.width * 0.02,
-                          isLoading: false,
-                          function: () {
-                            setState(() {
-                              isSearchEmployeeTimeStamp1 = 'searchByDate';
-                            });
-                          }),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1022,9 +954,9 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                   ]
                                 : <DataRow>[
                                     for (var item in liveData4)
-                                      if (item[0] ==
+                                      if (item[0].startsWith(
                                           employeeFullNameController.text
-                                              .trim())
+                                              .trim()))
                                         DataRow(cells: <DataCell>[
                                           for (var item2 in item.sublist(0))
                                             DataCell(Text(item2)),
@@ -1113,9 +1045,9 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                   ]
                                 : <DataRow>[
                                     for (var item in liveData6)
-                                      if (item[0] ==
+                                      if (item[0].startsWith(
                                           employeeFullNameController.text
-                                              .trim())
+                                              .trim()))
                                         DataRow(cells: <DataCell>[
                                           for (var item2 in item.sublist(0))
                                             DataCell(Text(item2)),

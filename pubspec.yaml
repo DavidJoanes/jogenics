@@ -38,6 +38,7 @@ dependencies:
   flutter_paystack: ^1.0.5
   flutterwave: ^1.0.1
   basic_utils: ^3.0.0
+  flutter_speed_dial: ^6.0.0
   rename: ^2.0.1
   google_fonts: ^2.0.0
   provider: ^5.0.0

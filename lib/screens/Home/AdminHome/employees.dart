@@ -14,6 +14,7 @@ import 'package:JoGenics/screens/Home/AdminHome/add_employee.dart';
 import 'package:csv/csv.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Employees extends StatefulWidget {
   const Employees({Key? key}) : super(key: key);
@@ -40,9 +41,9 @@ class _EmployeesState extends State<Employees> {
     'Lastname',
     'Gender',
     // 'EmailAddress',
-    'PhoneNumber',
     'Nationality',
     'StateOfOrigin',
+    'PhoneNumber',
     'HomeAddress',
     'Designation',
     'Password',
@@ -277,7 +278,7 @@ class _EmployeesState extends State<Employees> {
                                   });
                                   Navigator.of(context).pop();
                                   showDialog(
-                                    barrierDismissible: false,
+                                      barrierDismissible: false,
                                       context: context,
                                       builder: (context) {
                                         return Center(
@@ -480,10 +481,18 @@ class _EmployeesState extends State<Employees> {
       employeesRow.add(data);
     }
     String employeesCsv = const ListToCsvConverter().convert(employeesRow);
-    File employeesCsvFile = File(downloadFilePathForEmployees);
-    employeesCsvFile.writeAsString(employeesCsv);
+    try {
+      File employeesCsvFile = File(downloadFilePathForEmployees);
+      await employeesCsvFile.writeAsString(employeesCsv);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: primaryColor2,
+          content: Text("Operation succeeded..")));
+    } on FileSystemException catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: errorColor,
+          content: Text("Please close 'employees.csv' first!")));
+    }
   }
-
 
   @override
   void initState() {
@@ -508,6 +517,87 @@ class _EmployeesState extends State<Employees> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: errorColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.delete),
+            label: 'Delete employee',
+            onTap: () async {
+              await deleteRecord();
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.update),
+            label: 'Update employee',
+            onTap: () async {
+              final form = _formKey2.currentState!;
+              if (selectedData.isNotEmpty) {
+                if (selectedField != null) {
+                  if (form.validate()) {
+                    await updateRecord();
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: errorColor,
+                      content: Text("No field selected!")));
+                  return;
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: errorColor,
+                    content: Text("No record selected!")));
+                return;
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search employee',
+            onTap: () async {
+              final form = _formKey.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchEmployee = true;
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.add),
+            label: 'Add employee',
+            onTap: () async {
+              await Navigator.push(
+                  context, CustomPageRoute(widget: AddEmployee()));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              setState(() {
+                selectedData.clear();
+                emailController.text = '';
+                isSearchEmployee = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Employees", blackColor, true),
       body: Column(
@@ -539,10 +629,6 @@ class _EmployeesState extends State<Employees> {
                       });
                   await downloadEmployeesRecord();
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      backgroundColor: primaryColor2,
-                      content:
-                          Text("Operation succeeded..")));
                 },
               ),
             ],
@@ -557,186 +643,88 @@ class _EmployeesState extends State<Employees> {
   Widget buildSearchArea(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.32,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-        child: Column(
-          children: [
-            RoundedButtonEditProfile(
-                text: "Add Employee",
-                color: primaryColor,
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    CustomPageRoute(widget: AddEmployee()),
-                  );
-                }),
-            SizedBox(height: size.height * 0.01),
-            Row(
-              children: [
-                SizedBox(
-                  height: size.height * 0.22,
-                  child: Column(
-                    children: [
-                      Form(
-                          key: _formKey,
+      height: size.height * 0.23,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: size.height * 0.01),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: size.height * 0.22,
+                child: Column(
+                  children: [
+                    Form(
+                        key: _formKey,
+                        child: RoundedInputFieldMain(
+                            controller: emailController,
+                            width: size.width * 0.17,
+                            horizontalGap: size.width * 0.01,
+                            verticalGap: size.height * 0.001,
+                            radius: size.width * 0.005,
+                            mainText: '',
+                            labelText: 'Search by email address',
+                            icon: Icons.email,
+                            isEnabled: true,
+                            onChanged: (value) {
+                              value = emailController.text.trim();
+                            })),
+                  ],
+                ),
+              ),
+              SizedBox(width: size.width * 0.12),
+              SizedBox(
+                height: size.height * 0.22,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border:
+                                Border.all(color: transparentColor, width: 2),
+                            color: whiteColor,
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              hint: Text('Select a field'),
+                              value: selectedField,
+                              iconSize: 30,
+                              items: fields.map(buildFields).toList(),
+                              onChanged: (value) async => setState(() {
+                                selectedField = value;
+                              }),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: size.width * 0.01),
+                        Form(
+                          key: _formKey2,
                           child: RoundedInputFieldMain(
-                              controller: emailController,
-                              width: size.width * 0.17,
+                              controller: newValueController,
+                              width: size.width * 0.15,
                               horizontalGap: size.width * 0.01,
                               verticalGap: size.height * 0.001,
                               radius: size.width * 0.005,
                               mainText: '',
-                              labelText: 'Search by email address',
-                              icon: Icons.email,
-                                    isEnabled: true,
+                              labelText: 'Enter a new parameter',
+                              icon: Icons.edit_note_rounded,
+                              isEnabled: true,
                               onChanged: (value) {
-                                value = emailController.text.trim();
-                              })),
-                      SizedBox(height: size.height * 0.015),
-                      Row(
-                        children: [
-                          RoundedButtonMain(
-                              text1: 'Search',
-                              text2: 'Searching...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () {
-                                final form = _formKey.currentState!;
-                                if (form.validate()) {
-                                  setState(() {
-                                    isSearchEmployee = true;
-                                  });
-                                }
+                                value = newValueController.text.trim();
                               }),
-                          SizedBox(width: size.width * 0.01),
-                          RoundedButtonMain(
-                              text1: 'Delete',
-                              text2: 'Deleting...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () async {
-                                await deleteRecord();
-                              }),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(width: size.width * 0.12),
-                SizedBox(
-                  height: size.height * 0.22,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: transparentColor, width: 2),
-                              color: whiteColor,
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                hint: Text('Select a field'),
-                                value: selectedField,
-                                iconSize: 30,
-                                items: fields.map(buildFields).toList(),
-                                onChanged: (value) async => setState(() {
-                                  selectedField = value;
-                                }),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.01),
-                          Form(
-                            key: _formKey2,
-                            child: RoundedInputFieldMain(
-                                controller: newValueController,
-                                width: size.width * 0.15,
-                                horizontalGap: size.width * 0.01,
-                                verticalGap: size.height * 0.001,
-                                radius: size.width * 0.005,
-                                mainText: '',
-                                labelText: 'Enter a new parameter',
-                                icon: Icons.edit_note_rounded,
-                                    isEnabled: true,
-                                onChanged: (value) {
-                                  value = newValueController.text.trim();
-                                }),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: size.height * 0.015),
-                      Row(
-                        children: [
-                          IconButton(
-                              icon: Icon(Icons.refresh,
-                                  size: size.width * 0.02, color: primaryColor),
-                              onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("Please wait..")));
-                                setState(() {
-                                  emailController.text = '';
-                                  isSearchEmployee = null;
-                                });
-                              }),
-                          SizedBox(width: size.width * 0.03),
-                          RoundedButtonMain(
-                              text1: 'Update',
-                              text2: 'Updating...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () async {
-                                final form = _formKey2.currentState!;
-                                if (selectedData.isNotEmpty) {
-                                  if (selectedField != null) {
-                                    if (form.validate()) {
-                                      await updateRecord();
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor: errorColor,
-                                            content:
-                                                Text("No field selected!")));
-                                    return;
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          backgroundColor: errorColor,
-                                          content:
-                                              Text("No record selected!")));
-                                  return;
-                                }
-                              }),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -744,7 +732,7 @@ class _EmployeesState extends State<Employees> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.45,
+      height: size.height * 0.53,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(

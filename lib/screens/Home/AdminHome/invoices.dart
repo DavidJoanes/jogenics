@@ -7,6 +7,7 @@ import 'package:JoGenics/components/rounded_input_field.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 
 class Invoices extends StatefulWidget {
@@ -133,6 +134,145 @@ class _InvoicesState extends State<Invoices> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: primaryColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.open_in_full_rounded),
+            label: 'View orders',
+            onTap: () async {
+              if (selectedData.length == 1) {
+                await viewOrders(selectedData[0][0]);
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return dialog.ReturnDialog1(
+                        title: SizedBox(
+                          width: size.width * 0.7,
+                          height: size.height * 0.5,
+                          child: FutureBuilder(
+                            future: getUserData1c(),
+                            builder: (context, snapshot) {
+                              if (snapshot.data == null) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return Column(
+                                  children: [
+                                    Expanded(
+                                      child: DataTable2(
+                                          columnSpacing: 5,
+                                          horizontalMargin: 5,
+                                          bottomMargin: 20,
+                                          showBottomBorder: true,
+                                          minWidth: size.width * 0.6,
+                                          dataRowColor:
+                                              MaterialStateColor.resolveWith(
+                                                  (Set<MaterialState> states) =>
+                                                      states.contains(
+                                                              MaterialState
+                                                                  .selected)
+                                                          ? primaryColor
+                                                          : whiteColor),
+                                          showCheckboxColumn: false,
+                                          columns: <DataColumn>[
+                                            DataColumn(
+                                                label: Text('Description')),
+                                            DataColumn(label: Text('Quantity')),
+                                            DataColumn(label: Text('Price')),
+                                          ],
+                                          rows: <DataRow>[
+                                            for (var item in liveData3)
+                                              DataRow(
+                                                  selected: selectedData
+                                                      .contains(item),
+                                                  cells: <DataCell>[
+                                                    for (var item2
+                                                        in item.sublist(0))
+                                                      DataCell(Text(item2)),
+                                                  ]),
+                                          ]),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        message: '',
+                        color: navyBlueColor,
+                        buttonText: 'Close',
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            selectedData.clear();
+                          });
+                        },
+                      );
+                    });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: errorColor,
+                    content: Text("Invalid selection!")));
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.calendar_month_rounded),
+            label: 'Search by date',
+            onTap: () async {
+              showDatePicker(
+                      context: context,
+                      initialDate: dateOfInvoice,
+                      firstDate: DateTime(2022),
+                      lastDate: DateTime(2100))
+                  .then((date) => setState(() {
+                        dateOfInvoice = date!;
+                        convertDateTimeDisplay1(dateOfInvoice.toString());
+                        invoiceNumberController.text = '';
+                        isSearchInvoice = 'true';
+                      }));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search by invoice number',
+            onTap: () async {
+              final form = _formKey.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchInvoice = 'searchByNumber';
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              setState(() {
+                selectedData.clear();
+                invoiceNumberController.text = '';
+                isSearchInvoice = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Invoice", blackColor, true),
       body: Column(
@@ -174,202 +314,39 @@ class _InvoicesState extends State<Invoices> {
             children: [
               Form(
                   key: _formKey,
-                  child: RoundedInputFieldMain(
+                  child: RoundedInputField3b3(
                       controller: invoiceNumberController,
-                      width: size.width * 0.17,
-                      horizontalGap: size.width * 0.01,
-                      verticalGap: size.height * 0.001,
+                      width: size.width * 0.3,
                       radius: size.width * 0.005,
                       mainText: '',
-                      labelText: 'Search by invoice number',
+                      hideText: false,
+                      hintText: 'Search by invoice number',
+                      warningText: 'Enter a valid invoice number',
                       icon: Icons.shopping_bag_rounded,
-                      isEnabled: true,
                       onChanged: (value) {
                         value = invoiceNumberController.text.trim();
                       })),
               SizedBox(width: size.width * 0.05),
               Container(
-                width: size.width * 0.35,
+                width: size.width * 0.3,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(size.width * 0.005),
                   border: Border.all(color: transparentColor, width: 2),
                   color: whiteColor,
                 ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.edit_location_rounded,
-                          color: primaryColor),
-                      title: Text(
-                          dateOfInvoice1 == dateOfInvoice2
-                              ? 'Search by date ($dateOfInvoice2)'
-                              : dateOfInvoice1,
-                          style: TextStyle(color: Colors.black54)),
-                      trailing: IconButton(
-                        icon: Icon(Icons.calendar_month_rounded,
-                            color: primaryColor),
-                        onPressed: () {
-                          showDatePicker(
-                                  context: context,
-                                  initialDate: dateOfInvoice,
-                                  firstDate: DateTime(2022),
-                                  lastDate: DateTime(2100))
-                              .then((date) => setState(() {
-                                    dateOfInvoice = date!;
-                                    convertDateTimeDisplay1(
-                                        dateOfInvoice.toString());
-                                    isSearchInvoice = 'true';
-                                  }));
-                        },
-                      ),
-                    ),
-                  ],
+                child: ListTile(
+                  leading:
+                      Icon(Icons.calendar_month_rounded, color: primaryColor),
+                  title: Text(
+                      dateOfInvoice1 == dateOfInvoice2
+                          ? 'Date: ($dateOfInvoice2)'
+                          : dateOfInvoice1,
+                      style: TextStyle(color: Colors.black54)),
                 ),
               ),
             ],
           ),
           SizedBox(height: size.height * 0.015),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RoundedButtonMain(
-                  text1: 'Search',
-                  text2: 'Searching...',
-                  fontSize1: size.width * 0.01,
-                  fontSize2: size.width * 0.008,
-                  width: size.width * 0.1,
-                  horizontalGap: size.width * 0.01,
-                  verticalGap: size.height * 0.02,
-                  radius: size.width * 0.02,
-                  isLoading: false,
-                  function: () {
-                    final form = _formKey.currentState!;
-                    if (form.validate()) {
-                      setState(() {
-                        invoiceNumberController.text = '';
-                        isSearchInvoice = 'searchByNumber';
-                      });
-                    }
-                  }),
-              SizedBox(width: size.width * 0.1),
-              RoundedButtonRefresh(
-                  color: primaryColor,
-                  size: size.width * 0.02,
-                  onPressed: () {
-                    setState(() {
-                      isSearchInvoice = null;
-                    });
-                  }),
-              SizedBox(width: size.width * 0.1),
-              RoundedButtonMain(
-                  text1: 'View Orders',
-                  text2: 'Opening...',
-                  fontSize1: size.width * 0.01,
-                  fontSize2: size.width * 0.008,
-                  width: size.width * 0.1,
-                  horizontalGap: size.width * 0.01,
-                  verticalGap: size.height * 0.02,
-                  radius: size.width * 0.02,
-                  isLoading: false,
-                  function: () async {
-                    if (selectedData.length == 1) {
-                      await viewOrders(selectedData[0][0]);
-                      showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) {
-                            return dialog.ReturnDialog1(
-                              title: SizedBox(
-                                width: size.width * 0.7,
-                                height: size.height * 0.5,
-                                child: FutureBuilder(
-                                  future: getUserData1c(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.data == null) {
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    } else {
-                                      return Column(
-                                        children: [
-                                          Expanded(
-                                            child: DataTable2(
-                                                columnSpacing: 5,
-                                                horizontalMargin: 5,
-                                                bottomMargin: 20,
-                                                showBottomBorder: true,
-                                                minWidth: size.width * 0.6,
-                                                dataRowColor: MaterialStateColor
-                                                    .resolveWith((Set<
-                                                                MaterialState>
-                                                            states) =>
-                                                        states.contains(
-                                                                MaterialState
-                                                                    .selected)
-                                                            ? primaryColor
-                                                            : whiteColor),
-                                                showCheckboxColumn: false,
-                                                columns: <DataColumn>[
-                                                  DataColumn(
-                                                      label:
-                                                          Text('Description')),
-                                                  DataColumn(
-                                                      label: Text('Quantity')),
-                                                  DataColumn(
-                                                      label: Text('Price')),
-                                                ],
-                                                rows: <DataRow>[
-                                                  for (var item in liveData3)
-                                                    DataRow(
-                                                        selected: selectedData
-                                                            .contains(item),
-                                                        cells: <DataCell>[
-                                                          for (var item2 in item
-                                                              .sublist(0))
-                                                            DataCell(
-                                                                Text(item2)),
-                                                        ]),
-                                                ]),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                              message: '',
-                              color: navyBlueColor,
-                              buttonText: 'Close',
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                setState(() {
-                                  selectedData.clear();
-                                });
-                              },
-                            );
-                          });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: errorColor,
-                          content: Text("Invalid selection!")));
-                    }
-                  }),
-              // RoundedButtonMain(
-              //     text1: 'Delete',
-              //     text2: 'Deleting...',
-              //     fontSize1: size.width * 0.01,
-              //     fontSize2: size.width * 0.008,
-              //     width: size.width * 0.1,
-              //     horizontalGap: size.width * 0.01,
-              //     verticalGap: size.height * 0.02,
-              //     radius: size.width * 0.02,
-              //     isLoading: false,
-              //     function: () async {
-              //       await deleteRecord();
-              //     }),
-            ],
-          ),
-          SizedBox(width: size.width * 0.12),
         ],
       ),
     );

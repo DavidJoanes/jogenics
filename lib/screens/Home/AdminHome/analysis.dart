@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, must_be_immutable, library_private_types_in_public_api, prefer_typing_uninitialized_variables, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, must_be_immutable, library_private_types_in_public_api, prefer_typing_uninitialized_variables, use_build_context_synchronously, unused_catch_clause
 
 import 'dart:io';
 
@@ -825,7 +825,11 @@ class _BuildBarChartState extends State<BuildBarChart> {
               await Navigator.push(
                   context,
                   CustomPageRoute(
-                      widget: Analysis2(month: month, year: year!, isRoom: id == 'Rooms' ? true : false,)));
+                      widget: Analysis2(
+                    month: month,
+                    year: year!,
+                    isRoom: id == 'Rooms' ? true : false,
+                  )));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: errorColor,
@@ -1003,8 +1007,17 @@ class _BuildRightState extends State<BuildRight> {
       customersRow.add(data);
     }
     String customersCsv = const ListToCsvConverter().convert(customersRow);
-    File customersCsvFile = File(downloadFilePathForCustomers);
-    customersCsvFile.writeAsString(customersCsv);
+    try {
+      File customersCsvFile = File(downloadFilePathForCustomers);
+      await customersCsvFile.writeAsString(customersCsv);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: primaryColor2,
+          content: Text("Operation succeeded..")));
+    } on FileSystemException catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: errorColor,
+          content: Text("Please close 'customers.csv' first!")));
+    }
   }
 
   @override
@@ -1160,9 +1173,6 @@ class _BuildRightState extends State<BuildRight> {
                       });
                   await downloadCustomersRecord();
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      backgroundColor: primaryColor2,
-                      content: Text("Operation succeeded..")));
                 },
               ),
             ],

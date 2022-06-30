@@ -99,88 +99,90 @@ class _AboutState extends State<About> {
     return Scaffold(
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, 'About', blackColor, true),
-      body: Center(
-          child: Column(
-        children: [
-          SizedBox(height: size.height * 0.02),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Check for update ?',
-                  style: TextStyle(fontSize: size.width * 0.015)),
-              SizedBox(width: size.width * 0.01),
-              RoundedButtonMain(
-                text1: 'Check',
-                text2: 'Checking..',
-                fontSize1: size.width * 0.01,
-                fontSize2: size.width * 0.008,
-                width: size.width * 0.1,
-                radius: size.width * 0.03,
-                horizontalGap: size.width * 0.01,
-                verticalGap: size.height * 0.02,
-                color: primaryColor,
-                isLoading: false,
-                function: () async {
-                  try {
-                  await checkForUpdate();
-                  } on Exception catch (error) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        backgroundColor: errorColor,
-                        content: Text("Service unavailable!")));
-                  }
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: size.height * 0.05),
-          Container(
-            alignment: Alignment.center,
-            height: size.height * 0.7,
-            width: size.width * 0.6,
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(size.width * 0.02),
+      body: SingleChildScrollView(
+        child: Center(
+            child: Column(
+          children: [
+            SizedBox(height: size.height * 0.02),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Check for update ?',
+                    style: TextStyle(fontSize: size.width * 0.015)),
+                SizedBox(width: size.width * 0.01),
+                RoundedButtonMain(
+                  text1: 'Check',
+                  text2: 'Checking..',
+                  fontSize1: size.width * 0.01,
+                  fontSize2: size.width * 0.008,
+                  width: size.width * 0.1,
+                  radius: size.width * 0.03,
+                  horizontalGap: size.width * 0.01,
+                  verticalGap: size.height * 0.02,
+                  color: primaryColor,
+                  isLoading: false,
+                  function: () async {
+                    try {
+                    await checkForUpdate();
+                    } on Exception catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: errorColor,
+                          content: Text("Service unavailable!")));
+                    }
+                  },
+                ),
+              ],
             ),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: size.width * 0.03,
-                    backgroundColor: whiteColor,
-                    backgroundImage: AssetImage('assets/icons/JOGENICS.png'),
-                  ),
-                  SizedBox(width: size.width * 0.3),
-                  Text('Email: jogenics@gmail.com\n\nPhone: +2349032688974',
+            SizedBox(height: size.height * 0.05),
+            Container(
+              alignment: Alignment.center,
+              height: size.height * 0.7,
+              width: size.width * 0.6,
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(size.width * 0.02),
+              ),
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: size.width * 0.03,
+                      backgroundColor: whiteColor,
+                      backgroundImage: AssetImage('assets/icons/JOGENICS.png'),
+                    ),
+                    SizedBox(width: size.width * 0.3),
+                    Text('Email: jogenics@gmail.com\n\nPhone: +2349032688974',
+                        style: TextStyle(
+                            fontFamily: 'Biko',
+                            fontSize: size.width * 0.01,
+                            color: navyBlueColor,
+                            letterSpacing: 0.5))
+                  ],
+                ),
+                SizedBox(height: size.height * 0.01),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                  child: Divider(),
+                ),
+                SizedBox(height: size.height * 0.02),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                  child: Text(
+                      "Copyright (c) 2022, Jogenics Ltd All Rights Reserved.\n\n\nJoGenics Hotel Management Software is a Software designed and developed solely by David Joanes Kemdirim.\nIt was designed for the purpose of enhancing Hotel businesses accross the world, especially in Nigeria. Currently, this Software is only for the use of Owners, Managers and Receptionists of Hotels accross the world, to aid them in the following aspects:\n\n1) It gives the owner/manager the priviledges to efficiently monitor and regulate almost all the activities in the hotel from anywhere at any time.\n\n2) It assists the owners and managers of hotels to store records of their employees and guests.\n\n3) It assists the owners and managers of hotels to seamlessly analyze the daily, monthly and yearly income of the Hotel via the 'Analysis' tab, without the need for a third party software.\n\n4) It assists the receptionist whom is an employee of the owner/Manager, to either check in or check out a guest in a coherent manner.\n\n5) For Hotels with a Lounge/Bar Pub, it provides an 'Inventory' tab that permits Hotel owners or managers to keep track of all their products, as well as update the prices of each product. Also, it permits employees (Bartenders) to perform seamless transactions based on customer orders for these products.",
                       style: TextStyle(
                           fontFamily: 'Biko',
-                          fontSize: size.width * 0.01,
                           color: navyBlueColor,
-                          letterSpacing: 0.5))
-                ],
-              ),
-              SizedBox(height: size.height * 0.01),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                child: Divider(),
-              ),
-              SizedBox(height: size.height * 0.02),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                child: Text(
-                    "Copyright (c) 2022, Jogenics Ltd All Rights Reserved.\n\n\nJoGenics Hotel Management Software is a Software designed and developed solely by David Joanes Kemdirim.\nIt was designed for the purpose of enhancing Hotel businesses accross the world, especially in Nigeria. Currently, this Software is only for the use of Owners, Managers and Receptionists of Hotels accross the world, to aid them in the following aspects:\n\n1) It gives the owner/manager the priviledges to efficiently monitor and regulate almost all the activities in the hotel from anywhere at any time.\n\n2) It assists the owners and managers of hotels to store records of their employees and guests.\n\n3) It assists the owners and managers of hotels to seamlessly analyze the daily, monthly and yearly income of the Hotel via the 'Analysis' tab, without the need for a third party software.\n\n4) It assists the receptionist whom is an employee of the owner/Manager, to either check in or check out a guest in a coherent manner.",
-                    style: TextStyle(
-                        fontFamily: 'Biko',
-                        color: navyBlueColor,
-                        letterSpacing: 0.5,
-                        fontSize: size.width * 0.01),
-                    textAlign: TextAlign.justify),
-              )
-            ]),
-          ),
-        ],
-      )),
+                          letterSpacing: 0.5,
+                          fontSize: size.width * 0.01),
+                      textAlign: TextAlign.justify),
+                )
+              ]),
+            ),
+          ],
+        )),
+      ),
     );
   }
 }

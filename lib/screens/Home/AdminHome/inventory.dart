@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, unused_catch_clause, avoid_print
 
+import 'dart:io';
+
 import 'package:JoGenics/components/rounded_password_field.dart';
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/dialog.dart' as dialog;
@@ -9,8 +11,10 @@ import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/components/rounded_input_field.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:JoGenics/screens/Home/AdminHome/add_products.dart';
+import 'package:csv/csv.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Inventory extends StatefulWidget {
   const Inventory({Key? key}) : super(key: key);
@@ -33,7 +37,7 @@ class _InventoryState extends State<Inventory> {
   final fields = {
     '',
     'ProductName',
-    'Quantity',
+    // 'Quantity',
     'CostPrice',
     'MRP',
     'Lounge',
@@ -252,8 +256,8 @@ class _InventoryState extends State<Inventory> {
                             try {
                               if (await db.findProduct(selectedData[0][0]) ==
                                   true) {
-                                if (await db.deleteProduct(
-                                        selectedData[0][0]) ==
+                                if (await db
+                                        .deleteProduct(selectedData[0][0]) ==
                                     true) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -391,6 +395,70 @@ class _InventoryState extends State<Inventory> {
     }
   }
 
+  downloadInventoryRecord() async {
+    final downloadFilePathForInventory =
+        "${Directory.current.path}/downloads/inventory.csv";
+    late List liveData = [];
+    late List liveData2 = [];
+
+    final List inventoryHeader = [
+      [
+        'Product ID',
+        'Product Name',
+        'Cost Price',
+        'MRP',
+        'Lounge',
+        'Category',
+        'Sub Category',
+        "Vendor's Contact"
+      ]
+    ];
+    List<List<dynamic>> inventoryRow = [];
+
+    await db.fetchInventroy();
+    int len2 = db.ProductsRecord.length + 1;
+    for (var data in db.ProductsRecord) {
+      liveData.add(data['productid']);
+      liveData.add(data['productname']);
+      liveData.add(data['costprice']);
+      liveData.add(data['mrp']);
+      liveData.add(data['lounge']);
+      liveData.add(data['category']);
+      liveData.add(data['subcategory']);
+      liveData.add(data['vendorphone']);
+    }
+    late var x = 0;
+    late var y = 8;
+    for (var i = 1; i < len2; i += 1) {
+      if (i == 1) {
+        liveData2.add(liveData.sublist(x, y));
+      } else if (i > 1) {
+        x += 8;
+        y += 8;
+        liveData2.add(liveData.sublist(x, y));
+      }
+    }
+
+    for (var data in inventoryHeader) {
+      inventoryRow.add(data);
+    }
+    for (var data in liveData2) {
+      inventoryRow.add(data);
+    }
+    String inventoryCsv = const ListToCsvConverter().convert(inventoryRow);
+    try {
+      File inventoryCsvFile = File(downloadFilePathForInventory);
+      await inventoryCsvFile.writeAsString(inventoryCsv);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: primaryColor2,
+          content: Text("Operation succeeded..")));
+    } on FileSystemException catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: errorColor,
+          content: Text("Please close 'inventory.csv' first!")));
+    }
+  }
+
   @override
   void initState() {
     getUserData2();
@@ -413,13 +481,125 @@ class _InventoryState extends State<Inventory> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: errorColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.delete),
+            label: 'Delete product',
+            onTap: () async {
+              await deleteRecord();
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.update),
+            label: 'Update product',
+            onTap: () async {
+              final form = _formKey2.currentState!;
+              if (selectedData.isNotEmpty) {
+                if (selectedField != null && selectedField != '') {
+                  if (form.validate()) {
+                    await updateRecord();
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: errorColor,
+                      content: Text("No field selected!")));
+                  return;
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: errorColor,
+                    content: Text("No product selected!")));
+                return;
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search product',
+            onTap: () async {
+              final form = _formKey.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchInventory = true;
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.add),
+            label: 'Add product',
+            onTap: () async {
+              await Navigator.push(
+                  context, CustomPageRoute(widget: AddProduct()));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Please wait..")));
+              setState(() {
+                  selectedData.clear();
+                productController.text = '';
+                isSearchInventory = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Inventory", blackColor, true),
       body: Column(
         children: [
           SizedBox(height: size.height * 0.02),
           buildSearchArea(context),
-          SizedBox(height: size.height * 0.01),
+          SizedBox(height: size.height * 0.005),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.002),
+              Text('Download inventory record?',
+                  style: TextStyle(
+                      color: navyBlueColor, fontSize: size.width * 0.012)),
+              SizedBox(width: size.width * 0.004),
+              TextButton(
+                child: Text(
+                  'Download',
+                  style: TextStyle(
+                      color: primaryColor, fontSize: size.width * 0.012),
+                ),
+                onPressed: () async {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return Center(child: CircularProgressIndicator());
+                      });
+                  await downloadInventoryRecord();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: size.height * 0.005),
           buildTable(context),
         ],
       ),
@@ -429,187 +609,88 @@ class _InventoryState extends State<Inventory> {
   Widget buildSearchArea(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.32,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-        child: Column(
-          children: [
-            RoundedButtonEditProfile(
-                text: "Add Product",
-                color: primaryColor,
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    CustomPageRoute(widget: AddProduct()),
-                  );
-                }),
-            SizedBox(height: size.height * 0.01),
-            Row(
-              children: [
-                SizedBox(
-                  height: size.height * 0.22,
-                  child: Column(
-                    children: [
-                      Form(
-                          key: _formKey,
+      height: size.height * 0.23,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: size.height * 0.01),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: size.height * 0.22,
+                child: Column(
+                  children: [
+                    Form(
+                        key: _formKey,
+                        child: RoundedInputFieldMain(
+                            controller: productController,
+                            width: size.width * 0.17,
+                            horizontalGap: size.width * 0.01,
+                            verticalGap: size.height * 0.001,
+                            radius: size.width * 0.005,
+                            mainText: '',
+                            labelText: 'Search by product name',
+                            icon: Icons.shopping_bag_rounded,
+                            isEnabled: true,
+                            onChanged: (value) {
+                              value = productController.text.trim();
+                            })),
+                  ],
+                ),
+              ),
+              SizedBox(width: size.width * 0.12),
+              SizedBox(
+                height: size.height * 0.22,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border:
+                                Border.all(color: transparentColor, width: 2),
+                            color: whiteColor,
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              hint: Text('Select a field'),
+                              value: selectedField,
+                              iconSize: 30,
+                              items: fields.map(buildFields).toList(),
+                              onChanged: (value) async => setState(() {
+                                selectedField = value;
+                              }),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: size.width * 0.01),
+                        Form(
+                          key: _formKey2,
                           child: RoundedInputFieldMain(
-                              controller: productController,
-                              width: size.width * 0.17,
+                              controller: newValueController,
+                              width: size.width * 0.15,
                               horizontalGap: size.width * 0.01,
                               verticalGap: size.height * 0.001,
                               radius: size.width * 0.005,
                               mainText: '',
-                              labelText: 'Search by product name',
-                              icon: Icons.shopping_bag_rounded,
+                              labelText: 'Enter a new parameter',
+                              icon: Icons.edit_note_rounded,
                               isEnabled: true,
                               onChanged: (value) {
-                                value = productController.text.trim();
-                              })),
-                      SizedBox(height: size.height * 0.015),
-                      Row(
-                        children: [
-                          RoundedButtonMain(
-                              text1: 'Search',
-                              text2: 'Searching...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () {
-                                final form = _formKey.currentState!;
-                                if (form.validate()) {
-                                  setState(() {
-                                    isSearchInventory = true;
-                                  });
-                                }
+                                value = newValueController.text.trim();
                               }),
-                          SizedBox(width: size.width * 0.01),
-                          RoundedButtonMain(
-                              text1: 'Delete',
-                              text2: 'Deleting...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () async {
-                                await deleteRecord();
-                              }),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(width: size.width * 0.12),
-                SizedBox(
-                  height: size.height * 0.22,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: transparentColor, width: 2),
-                              color: whiteColor,
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                hint: Text('Select a field'),
-                                value: selectedField,
-                                iconSize: 30,
-                                items: fields.map(buildFields).toList(),
-                                onChanged: (value) async => setState(() {
-                                  selectedField = value;
-                                }),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.01),
-                          Form(
-                            key: _formKey2,
-                            child: RoundedInputFieldMain(
-                                controller: newValueController,
-                                width: size.width * 0.15,
-                                horizontalGap: size.width * 0.01,
-                                verticalGap: size.height * 0.001,
-                                radius: size.width * 0.005,
-                                mainText: '',
-                                labelText: 'Enter a new parameter',
-                                icon: Icons.edit_note_rounded,
-                                isEnabled: true,
-                                onChanged: (value) {
-                                  value = newValueController.text.trim();
-                                }),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: size.height * 0.015),
-                      Row(
-                        children: [
-                          IconButton(
-                              icon: Icon(Icons.refresh,
-                                  size: size.width * 0.02, color: primaryColor),
-                              onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("Please wait..")));
-                                setState(() {
-                                  productController.text = '';
-                                  isSearchInventory = null;
-                                });
-                              }),
-                          SizedBox(width: size.width * 0.03),
-                          RoundedButtonMain(
-                              text1: 'Update',
-                              text2: 'Updating...',
-                              fontSize1: size.width * 0.01,
-                              fontSize2: size.width * 0.008,
-                              width: size.width * 0.1,
-                              horizontalGap: size.width * 0.01,
-                              verticalGap: size.height * 0.02,
-                              radius: size.width * 0.02,
-                              isLoading: false,
-                              function: () async {
-                                final form = _formKey2.currentState!;
-                                if (selectedData.isNotEmpty) {
-                                  if (selectedField != null &&
-                                      selectedField != '') {
-                                    if (form.validate()) {
-                                      await updateRecord();
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor: errorColor,
-                                            content:
-                                                Text("No field selected!")));
-                                    return;
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          backgroundColor: errorColor,
-                                          content:
-                                              Text("No product selected!")));
-                                  return;
-                                }
-                              }),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -617,7 +698,7 @@ class _InventoryState extends State<Inventory> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.5,
+      height: size.height * 0.53,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(
