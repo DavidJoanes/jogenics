@@ -565,6 +565,25 @@ class _CustomerRecordsState extends State<CustomerRecords> {
             backgroundColor: Colors.teal,
             foregroundColor: whiteColor,
             child: Icon(Icons.calendar_month_rounded),
+            label: 'Search by date - Check-out (Customers record)',
+            onTap: () async {
+              showDatePicker(
+                      context: context,
+                      initialDate: dateOfCheckin,
+                      firstDate: DateTime(1990),
+                      lastDate: DateTime(2100))
+                  .then((date) => setState(() {
+                        dateOfCheckin = date!;
+                        convertDateTimeDisplay1(dateOfCheckin.toString());
+                        selectedData.clear();
+                        isSearchCustomers = 'searchByDate2';
+                      }));
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.calendar_month_rounded),
             label: 'Search by date - Check-in (Customers record)',
             onTap: () async {
               showDatePicker(
@@ -718,6 +737,8 @@ class _CustomerRecordsState extends State<CustomerRecords> {
               ? getUserData1()
               : isSearchCustomers == 'searchByDate'
                   ? getUserData1b()
+              : isSearchCustomers == 'searchByDate2'
+                  ? getUserData1c()
                   : getUserData1c(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
@@ -785,6 +806,28 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                 ? <DataRow>[
                                     for (var item in liveData2)
                                       if (item[10] == dateOfCheckin2)
+                                        DataRow(
+                                            selected:
+                                                selectedData.contains(item),
+                                            onSelectChanged: (isSelected) {
+                                              setState(() {
+                                                final isAdding =
+                                                    isSelected != null &&
+                                                        isSelected;
+                                                isAdding
+                                                    ? selectedData.add(item)
+                                                    : selectedData.remove(item);
+                                              });
+                                            },
+                                            cells: <DataCell>[
+                                              for (var item2 in item.sublist(0))
+                                                DataCell(Text(item2)),
+                                            ]),
+                                  ]
+                                : isSearchCustomers == 'searchByDate2'
+                                ? <DataRow>[
+                                    for (var item in liveData2)
+                                      if (item[11] == dateOfCheckin2)
                                         DataRow(
                                             selected:
                                                 selectedData.contains(item),
