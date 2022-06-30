@@ -48,6 +48,7 @@ class _SignInBodyUserState extends State<SignInBodyUser> {
     return Scaffold(
       body: MainWindow(
         backButton: BackButton(color: primaryColor),
+        destroyApp: true,
         child: Row(
           children: [
             LeftSide(),
@@ -168,6 +169,8 @@ class _RightSideState extends State<RightSide> {
                         isLoading: false,
                         getData: () {},
                         authenticate: () async {
+                          // Navigator.push(
+                          //     context, CustomPageRoute(widget: UserHome()));
                           final form = _formKey.currentState!;
                           if (hotel != null && hotel != '') {
                             if (form.validate()) {

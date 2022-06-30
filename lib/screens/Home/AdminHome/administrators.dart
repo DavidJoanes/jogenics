@@ -46,8 +46,8 @@ class _AdministratorsState extends State<Administrators> {
   }
 
   getUserData1b() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
+    // await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
+    //     db.CurrentLoggedInUserPassword);
     return db.Administrators;
   }
 

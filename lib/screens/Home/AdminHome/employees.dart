@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, unused_catch_clause, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/components/rounded_password_field.dart';
@@ -9,6 +11,7 @@ import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/components/rounded_input_field.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:JoGenics/screens/Home/AdminHome/add_employee.dart';
+import 'package:csv/csv.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
@@ -57,15 +60,15 @@ class _EmployeesState extends State<Employees> {
   }
 
   getUserData1() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
+    // await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
+    //     db.CurrentLoggedInUserPassword);
     changeIsSearchToFalse();
     return db.Employees;
   }
 
   getUserData1b() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
+    // await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
+    //     db.CurrentLoggedInUserPassword);
     return db.Employees;
   }
 
@@ -269,7 +272,7 @@ class _EmployeesState extends State<Employees> {
                                   Navigator.of(context).pop();
                                   setState(() {
                                     emailController.text = '';
-                                    isSearchAdmin = null;
+                                    isSearchEmployee = null;
                                     selectedData.clear();
                                   });
                                   Navigator.of(context).pop();
@@ -418,6 +421,70 @@ class _EmployeesState extends State<Employees> {
     }
   }
 
+  downloadEmployeesRecord() async {
+    final downloadFilePathForEmployees =
+        "${Directory.current.path}/downloads/employees.csv";
+    late List liveData = [];
+    late List liveData2 = [];
+
+    final List employeesHeader = [
+      [
+        'Hotel',
+        'First Name',
+        'Last Name',
+        'Gender',
+        'Email Address',
+        'Nationality',
+        'State of Origin',
+        'Phone Number',
+        'Home Address',
+        'Date of Employment',
+        'Designation',
+        'Password',
+      ]
+    ];
+    List<List<dynamic>> employeesRow = [];
+
+    await db.fetchEmployees();
+    int len2 = db.Employees.length + 1;
+    for (var data in db.Employees) {
+      liveData.add(data['hotel']);
+      liveData.add(data['firstname']);
+      liveData.add(data['lastname']);
+      liveData.add(data['gender']);
+      liveData.add(data['emailaddress']);
+      liveData.add(data['nationality']);
+      liveData.add(data['stateoforigin']);
+      liveData.add(data['phonenumber']);
+      liveData.add(data['homeaddress'].toString());
+      liveData.add(data['dateofemployment']);
+      liveData.add(data['designation']);
+      liveData.add(data['password']);
+    }
+    late var x = 0;
+    late var y = 12;
+    for (var i = 1; i < len2; i += 1) {
+      if (i == 1) {
+        liveData2.add(liveData.sublist(x, y));
+      } else if (i > 1) {
+        x += 12;
+        y += 12;
+        liveData2.add(liveData.sublist(x, y));
+      }
+    }
+
+    for (var data in employeesHeader) {
+      employeesRow.add(data);
+    }
+    for (var data in liveData2) {
+      employeesRow.add(data);
+    }
+    String employeesCsv = const ListToCsvConverter().convert(employeesRow);
+    File employeesCsvFile = File(downloadFilePathForEmployees);
+    employeesCsvFile.writeAsString(employeesCsv);
+  }
+
+
   @override
   void initState() {
     getUserData2();
@@ -447,7 +514,40 @@ class _EmployeesState extends State<Employees> {
         children: [
           SizedBox(height: size.height * 0.02),
           buildSearchArea(context),
-          SizedBox(height: size.height * 0.01),
+          SizedBox(height: size.height * 0.005),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.002),
+              Text('Download employees record?',
+                  style: TextStyle(
+                      color: navyBlueColor, fontSize: size.width * 0.012)),
+              SizedBox(width: size.width * 0.004),
+              TextButton(
+                child: Text(
+                  'Download',
+                  style: TextStyle(
+                      color: primaryColor, fontSize: size.width * 0.012),
+                ),
+                onPressed: () async {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return Center(child: CircularProgressIndicator());
+                      });
+                  await downloadEmployeesRecord();
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: primaryColor2,
+                      content:
+                          Text("Operation succeeded..")));
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: size.height * 0.005),
           buildTable(context),
         ],
       ),
@@ -644,7 +744,7 @@ class _EmployeesState extends State<Employees> {
   Widget buildTable(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.5,
+      height: size.height * 0.45,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         child: FutureBuilder(
@@ -664,6 +764,12 @@ class _EmployeesState extends State<Employees> {
                         bottomMargin: 20,
                         showBottomBorder: true,
                         minWidth: size.width * 0.91,
+                        dataRowColor: MaterialStateColor.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.selected)
+                                    ? primaryColor
+                                    : customBackgroundColor),
+                        showCheckboxColumn: false,
                         columns: <DataColumn>[
                           DataColumn(label: Text('Hotel')),
                           DataColumn(label: Text('First Name')),

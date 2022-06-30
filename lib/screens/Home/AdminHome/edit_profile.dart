@@ -247,6 +247,8 @@ class _EditProfileState extends State<EditProfile> {
           selected4: false,
           selected5: false,
           selected6: false,
+          selected7: false,
+          selected8: false,
           selectedPage: (value) async {
             setState(() {
               currentIndex = value;
@@ -584,7 +586,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
             )),
       ),
-      isLogout: false,
+      isLogout: false, destroyApp: true
     );
     // );
   }

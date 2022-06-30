@@ -6,6 +6,7 @@ import 'package:JoGenics/main.dart';
 import 'package:JoGenics/screens/Home/UserHome/checkin.dart';
 import 'package:JoGenics/screens/Home/UserHome/checkout.dart';
 import 'package:JoGenics/screens/Home/UserHome/profile.dart';
+import 'package:JoGenics/screens/Home/UserHome/sales.dart';
 import 'package:flutter/material.dart';
 
 class UserHome extends StatefulWidget {
@@ -16,21 +17,25 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-  late int currentIndex = 0;
+  late int currentIndex =
+      db.CurrentLoggedInUserDesignation == "receptionist" ? 0 : 1;
 
   late List pages = [
     Center(
       child: Profile(),
     ),
-    Center(
-      child: CheckIn(),
-    ),
-    Center(
-      child: CheckOut(),
-    ),
-    // Center(
-    //   child: Text('About'),
-    // ),
+    db.CurrentLoggedInUserDesignation == "receptionist"
+        ? Center(
+            child: CheckIn(),
+          )
+        : Center(
+            child: Sales(),
+          ),
+    db.CurrentLoggedInUserDesignation == "receptionist"
+        ? Center(
+            child: CheckOut(),
+          )
+        : null,
   ];
 
   @override
@@ -38,10 +43,16 @@ class _UserHomeState extends State<UserHome> {
     Size size = MediaQuery.of(context).size;
     return MainWindowNavigation(
       leftChild: buildLeftChild(
-          fullname: db.CurrentLoggedInUserLastname.toTitleCase(),
+          fullname: db.CurrentLoggedInUserLastname != ''
+              ? db.CurrentLoggedInUserLastname.toTitleCase()
+              : db.CurrentLoggedInUserLastname,
           emailaddress: db.CurrentLoggedInUserEmail,
-          selected0: true,
-          selected1: false,
+          selected0: db.CurrentLoggedInUserDesignation == "receptionist"
+              ? true
+              : false,
+          selected1: db.CurrentLoggedInUserDesignation == "receptionist"
+              ? false
+              : true,
           selected2: false,
           selected3: false,
           selected4: false,
@@ -59,7 +70,7 @@ class _UserHomeState extends State<UserHome> {
           child: pages[currentIndex],
         ),
       ),
-      isLogout: true,
+      isLogout: true, destroyApp: false,
     );
   }
 }
@@ -111,74 +122,108 @@ class _buildLeftChildState extends State<buildLeftChild> {
         height: size.height,
         width: size.width,
         child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.01, vertical: size.height * 0.02),
+          padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.01, vertical: size.height * 0.02),
           child: Flex(
             direction: Axis.vertical,
             children: <Widget>[
-              buildHeader(
-                size1: size.width * 0.017,
-                size2: size.width * 0.008,
-                size3: size.width * 0.01,
-                radius: size.width * 0.02,
-                urlImage: AssetImage('assets/images/default_profile_picture.png'),
-                name: widget.fullname,
-                email: widget.emailaddress,
-                onClicked: () {
-                  setState(() {
-                    selected0 = true;
-                    selected1 = false;
-                    selected2 = false;
-                    selected3 = false;
-                    selected4 = false;
-                    selected5 = false;
-                    selected6 = false;
-                  });
-                  widget.selectedPage(0);
-                },
-              ),
+              db.CurrentLoggedInUserDesignation == "receptionist"
+                  ? buildHeader(
+                      size1: size.width * 0.017,
+                      size2: size.width * 0.008,
+                      size3: size.width * 0.01,
+                      radius: size.width * 0.02,
+                      urlImage: AssetImage(
+                          'assets/images/default_profile_picture.png'),
+                      name: widget.fullname,
+                      email: widget.emailaddress,
+                      onClicked: () {
+                        setState(() {
+                          selected0 = true;
+                          selected1 = false;
+                          selected2 = false;
+                          selected3 = false;
+                          selected4 = false;
+                          selected5 = false;
+                          selected6 = false;
+                        });
+                        widget.selectedPage(0);
+                      },
+                    )
+                  : buildHeader2(
+                      size1: size.width * 0.017,
+                      size2: size.width * 0.008,
+                      size3: size.width * 0.01,
+                      radius: size.width * 0.02,
+                      urlImage: AssetImage(
+                          'assets/images/default_profile_picture.png'),
+                      name: widget.fullname,
+                      email: widget.emailaddress,
+                    ),
               SizedBox(height: size.height * 0.01),
               Divider(color: whiteColor),
               SizedBox(height: size.height * 0.03),
-              buildNavigationButton(
-                  size1: size.width * 0.01,
-                  size2: size.width * 0.028,
-                  size3: size.height * 0.02,
-                  text: 'Check In',
-                  icon: Icons.check_box_outlined,
-                  selected: selected1,
-                  onClicked: () {
-                    setState(() {
-                      selected0 = false;
-                      selected1 = true;
-                      selected2 = false;
-                      selected3 = false;
-                      selected4 = false;
-                      selected5 = false;
-                      selected6 = false;
-                    });
-                    widget.selectedPage(1);
-                  }),
+              db.CurrentLoggedInUserDesignation == "receptionist"
+                  ? buildNavigationButton(
+                      size1: size.width * 0.01,
+                      size2: size.width * 0.028,
+                      size3: size.height * 0.02,
+                      text: 'Check In',
+                      icon: Icons.check_box_outlined,
+                      selected: selected1,
+                      onClicked: () {
+                        setState(() {
+                          selected0 = false;
+                          selected1 = true;
+                          selected2 = false;
+                          selected3 = false;
+                          selected4 = false;
+                          selected5 = false;
+                          selected6 = false;
+                        });
+                        widget.selectedPage(1);
+                      })
+                  : buildNavigationButton(
+                      size1: size.width * 0.01,
+                      size2: size.width * 0.028,
+                      size3: size.height * 0.02,
+                      text: 'Sales',
+                      icon: Icons.shopify_rounded,
+                      selected: selected1,
+                      onClicked: () {
+                        setState(() {
+                          selected0 = false;
+                          selected1 = true;
+                          selected2 = false;
+                          selected3 = false;
+                          selected4 = false;
+                          selected5 = false;
+                          selected6 = false;
+                        });
+                        widget.selectedPage(1);
+                      }),
               SizedBox(height: size.height * 0.02),
-              buildNavigationButton(
-                  size1: size.width * 0.01,
-                  size2: size.width * 0.028,
-                  size3: size.height * 0.02,
-                  text: 'Check Out',
-                  icon: Icons.output_rounded,
-                  selected: selected2,
-                  onClicked: () {
-                    setState(() {
-                      selected0 = false;
-                      selected1 = false;
-                      selected2 = true;
-                      selected3 = false;
-                      selected4 = false;
-                      selected5 = false;
-                      selected6 = false;
-                    });
-                    widget.selectedPage(2);
-                  }),
+              db.CurrentLoggedInUserDesignation == "receptionist"
+                  ? buildNavigationButton(
+                      size1: size.width * 0.01,
+                      size2: size.width * 0.028,
+                      size3: size.height * 0.02,
+                      text: 'Check Out',
+                      icon: Icons.output_rounded,
+                      selected: selected2,
+                      onClicked: () {
+                        setState(() {
+                          selected0 = false;
+                          selected1 = false;
+                          selected2 = true;
+                          selected3 = false;
+                          selected4 = false;
+                          selected5 = false;
+                          selected6 = false;
+                        });
+                        widget.selectedPage(2);
+                      })
+                  : Text('', style: TextStyle(fontSize: 1)),
             ],
           ),
         ),
@@ -237,6 +282,57 @@ class _buildLeftChildState extends State<buildLeftChild> {
           ),
         ),
       );
+
+  Widget buildHeader2({
+    required double size1,
+    size2,
+    size3,
+    radius,
+    required String name,
+    required String email,
+    required var urlImage,
+  }) =>
+      InkWell(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: size2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(size3),
+            color: selected0 ? Colors.black12 : transparentColor,
+          ),
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: radius,
+                backgroundImage: urlImage,
+                backgroundColor: Colors.white,
+              ),
+              SizedBox(width: size3),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: size1,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Isocpeur',
+                    ),
+                  ),
+                  Text(
+                    email,
+                    style: TextStyle(
+                        fontSize: size2,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      );
+
 
   Widget buildNavigationButton({
     required double size1,

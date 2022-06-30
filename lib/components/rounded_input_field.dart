@@ -305,6 +305,66 @@ class _RoundedInputField3b2State extends State<RoundedInputField3b2> {
   }
 }
 
+class RoundedInputField3b3 extends StatefulWidget {
+  final double width;
+  final double radius;
+  final TextEditingController controller;
+  final bool hideText;
+  final String mainText;
+  final String hintText;
+  final String warningText;
+  final IconData icon;
+  final ValueChanged<String> onChanged;
+  const RoundedInputField3b3({
+    Key? key,
+    required this.width,
+    required this.radius,
+    required this.controller,
+    required this.hideText,
+    required this.mainText,
+    required this.hintText,
+    required this.warningText,
+    this.icon = Icons.numbers_rounded,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  State<RoundedInputField3b3> createState() => _RoundedInputField3b3State();
+}
+
+class _RoundedInputField3b3State extends State<RoundedInputField3b3> {
+  @override
+  Widget build(BuildContext context) {
+    return TextFieldContainer(
+      width: widget.width,
+      radius: widget.radius,
+      child: TextFormField(
+        style: TextStyle(color: Colors.grey.shade900),
+        controller: widget.controller,
+        obscureText: widget.hideText,
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+        ],
+        validator: (value) =>
+            value == null || value == '' || value.startsWith(' ')
+                ? widget.warningText
+                : null,
+        cursorColor: primaryColor,
+        decoration: InputDecoration(
+          icon: Icon(
+            widget.icon,
+            color: primaryColor,
+          ),
+          labelText: widget.hintText,
+          hintText: widget.mainText,
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+}
+
 class RoundedInputField3c extends StatefulWidget {
   final TextEditingController controller;
   final String mainText;
@@ -532,7 +592,7 @@ class _RoundedInputFieldMain2bState extends State<RoundedInputFieldMain2b> {
         ],
         onChanged: widget.onChanged,
         cursorColor: primaryColor,
-        validator: (value) =>(widget.validator == 'DISCOUNTED') &&
+        validator: (value) => (widget.validator == 'DISCOUNTED') &&
                 (value == '' || value!.startsWith(' '))
             ? widget.warningText
             : null,

@@ -83,18 +83,16 @@ class RoundedButtonGeneral extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<RoundedButtonGeneral> createState() =>
-      _RoundedButtonGeneralState();
+  State<RoundedButtonGeneral> createState() => _RoundedButtonGeneralState();
 }
 
-class _RoundedButtonGeneralState
-    extends State<RoundedButtonGeneral> {
+class _RoundedButtonGeneralState extends State<RoundedButtonGeneral> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
-      width: size.width * 0.2,
+      width: size.width * 0.17,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(29),
         child: newElevatedButton(context),
@@ -137,6 +135,80 @@ class _RoundedButtonGeneralState
                   fontWeight: FontWeight.bold,
                 ),
               ),
+        onPressed: () async {
+          if (widget.isLoading) return;
+
+          setState(() => widget.isLoading = true);
+          await widget.update();
+          // await Future.delayed(const Duration(seconds: 2));
+          setState(() => widget.isLoading = false);
+        });
+  }
+}
+
+// GENERAL2
+class RoundedButtonGeneral2 extends StatefulWidget {
+  final String text1;
+  final String text2;
+  final Color color, textColor;
+  bool isLoading;
+  final Function update;
+  RoundedButtonGeneral2({
+    Key? key,
+    required this.text1,
+    required this.text2,
+    required this.color,
+    this.textColor = Colors.white,
+    required this.isLoading,
+    required this.update,
+  }) : super(key: key);
+
+  @override
+  State<RoundedButtonGeneral2> createState() => _RoundedButtonGeneral2State();
+}
+
+class _RoundedButtonGeneral2State extends State<RoundedButtonGeneral2> {
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      width: size.width * 0.15,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(29),
+        child: newElevatedButton(context),
+      ),
+    );
+  }
+
+  Widget newElevatedButton(BuildContext context) {
+    return ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(widget.color),
+          padding: MaterialStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 5, vertical: 16)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.text1,
+              style: TextStyle(
+                color: widget.textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 10),
+            Text(
+              widget.text2,
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
         onPressed: () async {
           if (widget.isLoading) return;
 

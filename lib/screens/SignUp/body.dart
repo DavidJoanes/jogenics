@@ -55,6 +55,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     return Scaffold(
       body: MainWindow(
         backButton: BackButton(color: primaryColor),
+        destroyApp: true,
         child: Row(
           children: [
             LeftSide(),

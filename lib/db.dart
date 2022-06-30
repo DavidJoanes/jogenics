@@ -12,6 +12,8 @@ final db_collection_main = "main";
 final db_collection_administrators = "${HotelCollectionName}_administrators";
 final db_collection_employees = "${HotelCollectionName}_employees";
 final db_collection_customers = "${HotelCollectionName}_customers";
+final db_collection_inventory = "${HotelCollectionName}_inventory";
+final db_collection_invoices = "${HotelCollectionName}_invoices";
 final db_collection_timestamp_checkin_checkout =
     "${HotelCollectionName}_timestamp_checkin_checkout";
 final db_collection_timestamp_update =
@@ -43,7 +45,7 @@ late String CurrentLoggedInUserStateOfOrigin = '';
 late String CurrentLoggedInUserPhone = '';
 late String CurrentLoggedInUserHomeAddress = '';
 late String CurrentLoggedInUserDateOfEmployment = '';
-late String CurrentLoggedInUserDesignation = '';
+late String CurrentLoggedInUserDesignation = 'bartender';
 late int CurrentLoggedInUserAuthorizationCode = 0;
 late String CurrentLoggedInUserAuthorizationCodeHashed = 'xxxxxxxxxx';
 late String CurrentLoggedInUserSecurityQuestion = '';
@@ -62,6 +64,7 @@ late String HotelAddress = '';
 late String HotelProvince = '';
 late String HotelCountry = '';
 late String HotelCurrency = '';
+late String HotelPrinterIP = '';
 late int StandardRoomRate = 0;
 late int ExecutiveRoomRate = 0;
 late int PresidentialRoomRate = 0;
@@ -79,6 +82,8 @@ late int SubscriptionDaysLeft = constants.fetchSubscriptionDaysLeft();
 late var Administrators = [];
 late var Employees = [];
 late var CustomersRecord = [];
+late var ProductsRecord = [];
+late var InvoicesRecord = [];
 late var CustomerRecordForUpdate = [];
 late var EmployeetimeStampCheckin_out = [];
 late var EmployeetimeStampUpdate = [];
@@ -323,7 +328,8 @@ employeeSignIn(hotel, emailaddress, password) async {
       if (hotel == check[0]['hotel'] &&
           emailaddress == check[0]['emailaddress'] &&
           password == check[0]['password']) {
-        if (check[0]['designation'] == 'receptionist') {
+        if (check[0]['designation'] == 'receptionist' ||
+            check[0]['designation'] == 'bartender') {
           await fetchLoggedInEmployeeData(emailaddress);
           print('success sign in');
           return true;
@@ -727,6 +733,250 @@ updateEmployee(
     }
   } on Exception catch (error) {
     return 'No internet';
+  }
+}
+
+// Inventory tab
+addProduct(productid, productname, quantity, costprice, mrp, lounge, category,
+    subcategory, vendorphone) async {
+  productid = productid.toLowerCase();
+  productname = productname.toLowerCase();
+  quantity = quantity.toLowerCase();
+  costprice = costprice.toLowerCase();
+  mrp = mrp.toLowerCase();
+  lounge = lounge.toLowerCase();
+  category = category.toLowerCase();
+  subcategory = subcategory.toLowerCase();
+  vendorphone = vendorphone.toLowerCase();
+
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  try {
+    if (check.isEmpty) {
+      final insert = await dbClient.insert(<String, dynamic>{
+        'productid': productid,
+        'productname': productname,
+        'quantity': quantity,
+        'costprice': costprice,
+        'mrp': mrp,
+        'lounge': lounge,
+        'category': category,
+        'subcategory': subcategory,
+        'vendorphone': vendorphone,
+      });
+      print('success product added');
+      return true;
+    } else {
+      return false;
+    }
+  } on Exception catch (error) {
+    return 'No internet connection';
+  }
+}
+
+updateProduct(productid, productname, quantity, costprice, mrp, lounge,
+    category, subcategory, vendorphone) async {
+  // productid = productid.toLowerCase();
+  productname = productname.toLowerCase();
+  quantity = quantity.toLowerCase();
+  costprice = costprice.toLowerCase();
+  mrp = mrp.toLowerCase();
+  lounge = lounge.toLowerCase();
+  category = category.toLowerCase();
+  subcategory = subcategory.toLowerCase();
+  vendorphone = vendorphone.toLowerCase();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  try {
+    if (check.isNotEmpty) {
+      final insert = await dbClient.update({
+        'productid': productid
+      }, {
+        'productid': productid,
+        'productname': productname,
+        'quantity': quantity,
+        'costprice': costprice,
+        'mrp': mrp,
+        'lounge': lounge,
+        'category': category,
+        'subcategory': subcategory,
+        'vendorphone': vendorphone,
+      });
+      return true;
+    } else {
+      return false;
+    }
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+checkForValidProductId(productid) async {
+  productid = productid.toLowerCase();
+
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  if (check.isEmpty) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+fetchInventroy() async {
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find().toList();
+
+  try {
+    if (check.isNotEmpty) {
+      ProductsRecord = check;
+    }
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+findProduct(productid) async {
+  productid = productid.toString();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  try {
+    if (check.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+deleteProduct(productid) async {
+  productid = productid.toLowerCase();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  try {
+    if (check.isNotEmpty) {
+      dbClient.deleteOne({'productid': productid});
+      print('delete success');
+      return true;
+    } else {
+      return false;
+    }
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+
+// Invoices Tab
+fetchInvoicesRecord() async {
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_invoices);
+
+  final check = await dbClient.find().toList();
+
+  try {
+    if (check.isNotEmpty) {
+      InvoicesRecord = check;
+    }
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+
+// Sales Tab
+updateProductQuantity(productid, productname, quantity, costprice, mrp, lounge,
+    category, subcategory, vendorphone) async {
+  productid = productid.toLowerCase();
+  productname = productname.toLowerCase();
+  quantity = quantity.toLowerCase();
+  costprice = costprice.toLowerCase();
+  mrp = mrp.toLowerCase();
+  lounge = lounge.toLowerCase();
+  category = category.toLowerCase();
+  subcategory = subcategory.toLowerCase();
+  vendorphone = vendorphone.toLowerCase();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_inventory);
+
+  final check = await dbClient.find({'productid': productid}).toList();
+
+  try {} on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+sellProducts(invoicenumber, date, bartender, waiter, modeofpayment,
+    posreforconfirmation, totalcost, cartalog) async {
+  invoicenumber = invoicenumber.toString();
+  bartender = bartender.toLowerCase();
+  waiter = waiter.toLowerCase();
+  modeofpayment = modeofpayment.toLowerCase();
+  posreforconfirmation = posreforconfirmation.toLowerCase();
+  totalcost = totalcost.toLowerCase();
+  // cartalog = cartalog.toLowerCase();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_invoices);
+
+  // final check = await dbClient.find().toList();
+
+  try {
+    final insert = await dbClient.insert(<String, dynamic>{
+      'invoicenumber': invoicenumber,
+      'date': date,
+      'bartender': bartender,
+      'waiter': waiter,
+      'modeofpayment': modeofpayment,
+      'posreforconfirmation': posreforconfirmation,
+      'totalcost': totalcost,
+      'cartalog': cartalog
+    });
+    return true;
+  } on Exception catch (error) {
+    return 'No internet';
+  }
+}
+
+checkForValidInvoiceNumber(invoicenumber) async {
+  invoicenumber = invoicenumber.toString();
+
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_invoices);
+
+  final check = await dbClient.find({'invoicenumber': invoicenumber}).toList();
+
+  if (check.isEmpty) {
+    return true;
+  } else {
+    return false;
   }
 }
 

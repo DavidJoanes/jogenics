@@ -43,6 +43,7 @@ class _ResetPasswordBodyState extends State<ResetPasswordBody> {
     return Scaffold(
       body: MainWindow(
         backButton: BackButton(color: primaryColor),
+        destroyApp: true,
         child: Row(
           children: [
             LeftSide(),

@@ -25,7 +25,6 @@ class AddEmployee extends StatefulWidget {
 
 class _AddEmployeeState extends State<AddEmployee> {
   // final int currentIndex = 2;
-
   final _formKey = GlobalKey<FormState>();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -47,7 +46,6 @@ class _AddEmployeeState extends State<AddEmployee> {
       nationalities.add(data['name'] as String);
     }
   }
-
   DropdownMenuItem<String> buildNationalities(String Nationality) =>
       DropdownMenuItem(
           value: Nationality,
@@ -71,7 +69,6 @@ class _AddEmployeeState extends State<AddEmployee> {
     }
     return liveData;
   }
-
   DropdownMenuItem<String> buildStates(String state) => DropdownMenuItem(
       value: state,
       child: Text(
@@ -165,6 +162,8 @@ class _AddEmployeeState extends State<AddEmployee> {
             selected4: false,
             selected5: false,
             selected6: false,
+            selected7: false,
+            selected8: false,
             selectedPage: () => null),
         rightChild: Scaffold(
             backgroundColor: customBackgroundColor,
@@ -428,9 +427,9 @@ class _AddEmployeeState extends State<AddEmployee> {
                                     true) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                          backgroundColor: primaryColor,
+                                          backgroundColor: primaryColor2,
                                           content: Text(
-                                              "${lastNameController.text.trim().toTitleCase()} added as $designation. Please refresh this tab..")));
+                                              "${lastNameController.text.trim().toTitleCase()} added as $designation. Please restart this tab..")));
                                   Navigator.of(context).pop();
                                 } else {
                                   showDialog(
@@ -466,6 +465,6 @@ class _AddEmployeeState extends State<AddEmployee> {
                 ),
               ),
             )),
-        isLogout: false);
+        isLogout: false, destroyApp: true);
   }
 }

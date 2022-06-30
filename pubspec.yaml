@@ -41,29 +41,34 @@ dependencies:
   rename: ^2.0.1
   google_fonts: ^2.0.0
   provider: ^5.0.0
-  theme_provider: ^0.5.0
   mongo_dart: ^0.7.4+1
   email_validator: ^2.0.1
   flutter_pw_validator: ^1.4.2
   bitsdojo_window: ^0.1.2
   window_manager: ^0.2.3
   file_picker: ^4.5.1
-  flutter_filereader: ^3.0.0
-  path_provider: ^2.0.1
-  shared_preferences: ^2.0.5
   data_table_2: ^2.2.3
-  http: ^0.13.0
   charts_flutter: ^0.12.0
-  graphic: ^0.10.4
   fl_chart: ^0.51.0
   intl: ^0.17.0
-  url_launcher: ^6.1.2
   url_launcher_windows: ^3.0.1
   mailto: ^2.0.0
   jiffy: ^5.0.0
-  collection: ^1.16.0
   csv: any
   dio: ^4.0.6
+  pdf: ^3.8.1
+  printing: ^5.9.1
+  # theme_provider: ^0.5.0
+  # http: ^0.13.0
+  # flutter_filereader: ^3.0.0
+  # path_provider: ^2.0.1
+  # shared_preferences: ^2.0.5
+  # graphic: ^0.10.4
+  # url_launcher: ^6.1.2
+  # collection: ^1.16.0
+  # esc_pos_printer: ^4.1.0
+  # image: ^3.2.0
+  # screenshot: ^1.2.3
   # google_sign_in: ^5.3.3
   # googleapis: any
   # googleapis_auth: any

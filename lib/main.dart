@@ -19,7 +19,7 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-  runApp(RestartWidget(child: MyApp()));
+  runApp(RestartWidget(child: MyApp(destroyApp: true)));
   doWhenWindowReady(() {
     initialSize = Size(800, 600);
     appWindow.size = initialSize;
@@ -32,7 +32,8 @@ Future main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key, required this.destroyApp}) : super(key: key);
+  final bool destroyApp;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -135,17 +136,22 @@ class _MyAppState extends State<MyApp> with WindowListener {
       //   },
       // )
       home: Scaffold(
-        body: MainWindow(backButton: Text(''), child: Home()),
+        body: MainWindow(backButton: Text(''), destroyApp: widget.destroyApp, child: Home()),
       ),
     );
   }
 }
 
 class MainWindow extends StatefulWidget {
-  const MainWindow({Key? key, required this.child, required this.backButton})
+  const MainWindow(
+      {Key? key,
+      required this.child,
+      required this.backButton,
+      required this.destroyApp})
       : super(key: key);
   final Widget child;
   final Widget backButton;
+  final bool destroyApp;
 
   @override
   State<MainWindow> createState() => _MainWindowState();
@@ -163,7 +169,7 @@ class _MainWindowState extends State<MainWindow> {
               Expanded(
                 child: MoveWindow(),
               ),
-              WindowButtons(),
+              WindowButtons(destroyApp: widget.destroyApp),
             ],
           ),
         ),
@@ -178,11 +184,12 @@ class MainWindowNavigation extends StatefulWidget {
       {Key? key,
       required this.leftChild,
       required this.rightChild,
-      required this.isLogout})
+      required this.isLogout, required this.destroyApp})
       : super(key: key);
   final Widget leftChild;
   final Widget rightChild;
   final bool isLogout;
+  final bool destroyApp;
 
   @override
   State<MainWindowNavigation> createState() => _MainWindowNavigationState();
@@ -198,6 +205,7 @@ class _MainWindowNavigationState extends State<MainWindowNavigation> {
                 ? buildLogoutWidget(context)
                 : Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back, color: primaryColor)),
+        destroyApp: widget.destroyApp,
         child: Row(
           children: [
             LeftSide(
@@ -246,7 +254,8 @@ class _RightSideState extends State<RightSide> {
 }
 
 class WindowButtons extends StatelessWidget {
-  WindowButtons({Key? key}) : super(key: key);
+  WindowButtons({Key? key, required this.destroyApp}) : super(key: key);
+  late bool destroyApp;
 
   var buttonColors = WindowButtonColors(
     iconNormal: primaryColor,
@@ -273,33 +282,35 @@ class WindowButtons extends StatelessWidget {
   }
 
   closeWindow(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('JoGenics HMS'),
-            content:
-                const Text('Do you wish to exit?', textAlign: TextAlign.center),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(primaryColor),
-                ),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pop(true);
-                  await windowManager.destroy();
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(errorColor),
-                ),
-                child: const Text('Exit'),
-              ),
-            ],
-          );
-        });
+    destroyApp
+        ? showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('JoGenics HMS'),
+                content: const Text('Do you wish to exit?',
+                    textAlign: TextAlign.center),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(primaryColor),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop(true);
+                      await windowManager.destroy();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(errorColor),
+                    ),
+                    child: const Text('Exit'),
+                  ),
+                ],
+              );
+            })
+        : null;
   }
 }

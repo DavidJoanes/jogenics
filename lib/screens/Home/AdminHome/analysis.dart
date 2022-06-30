@@ -32,24 +32,27 @@ class _AnalysisState extends State<Analysis> {
         Year,
       ));
 
-  // Income for each month
-  late int january = 0;
-  late int febuary = 0;
-  late int march = 0;
-  late int april = 0;
-  late int may = 0;
-  late int june = 0;
-  late int july = 0;
-  late int august = 0;
-  late int september = 0;
-  late int october = 0;
-  late int november = 0;
-  late int december = 0;
+  // Income for each month for both the rooms and the lounge
+  late int january = 0, january2 = 0;
+  late int febuary = 0, febuary2 = 0;
+  late int march = 0, march2 = 0;
+  late int april = 0, april2 = 0;
+  late int may = 0, may2 = 0;
+  late int june = 0, june2 = 0;
+  late int july = 0, july2 = 0;
+  late int august = 0, august2 = 0;
+  late int september = 0, september2 = 0;
+  late int october = 0, october2 = 0;
+  late int november = 0, november2 = 0;
+  late int december = 0, december2 = 0;
 
   fetchYears() {
     // late List years = [];
     for (var data in db.CustomersRecord) {
       years.add(data['checkindate'].split('-')[2]);
+    }
+    for (var data in db.InvoicesRecord) {
+      years.add(data['date'].split('-')[2]);
     }
   }
 
@@ -110,6 +113,63 @@ class _AnalysisState extends State<Analysis> {
     }
   }
 
+  fetchIncome2(year) {
+    january2 = 0;
+    febuary2 = 0;
+    march2 = 0;
+    april2 = 0;
+    may2 = 0;
+    june2 = 0;
+    july2 = 0;
+    august2 = 0;
+    september2 = 0;
+    october2 = 0;
+    november2 = 0;
+    december2 = 0;
+    num total = 0;
+    for (var data in db.InvoicesRecord) {
+      if (year == data['date'].split('-')[2]) {
+        if (data['date'].split('-')[1] == '01') {
+          total += int.parse(data['totalcost']);
+          january2 = total as int;
+        } else if (data['date'].split('-')[1] == '02') {
+          total += int.parse(data['totalcost']);
+          febuary2 = total as int;
+        } else if (data['date'].split('-')[1] == '03') {
+          total += int.parse(data['totalcost']);
+          march2 = total as int;
+        } else if (data['date'].split('-')[1] == '04') {
+          total += int.parse(data['totalcost']);
+          april2 = total as int;
+        } else if (data['date'].split('-')[1] == '05') {
+          total += int.parse(data['totalcost']);
+          may2 = total as int;
+        } else if (data['date'].split('-')[1] == '06') {
+          total += int.parse(data['totalcost']);
+          june2 = total as int;
+        } else if (data['date'].split('-')[1] == '07') {
+          total += int.parse(data['totalcost']);
+          july2 = total as int;
+        } else if (data['date'].split('-')[1] == '08') {
+          total += int.parse(data['totalcost']);
+          august2 = total as int;
+        } else if (data['date'].split('-')[1] == '09') {
+          total += int.parse(data['totalcost']);
+          september2 = total as int;
+        } else if (data['date'].split('-')[1] == '10') {
+          total += int.parse(data['totalcost']);
+          october2 = total as int;
+        } else if (data['date'].split('-')[1] == '11') {
+          total += int.parse(data['totalcost']);
+          november2 = total as int;
+        } else {
+          total += int.parse(data['totalcost']);
+          december2 = total as int;
+        }
+      }
+    }
+  }
+
   int indexForMonthsOfBestSellers = 0;
 
   @override
@@ -129,6 +189,7 @@ class _AnalysisState extends State<Analysis> {
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: customBackgroundColor,
         appBar: buildAppBar(context, 'Analysis', blackColor, true),
         body: SingleChildScrollView(
           child: Column(
@@ -142,10 +203,11 @@ class _AnalysisState extends State<Analysis> {
                     color: whiteColor,
                   ),
                   child: ListTile(
-                    leading: Icon(Icons.numbers, color: primaryColor),
+                    leading:
+                        Icon(Icons.calendar_month_rounded, color: primaryColor),
                     title: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
-                        hint: Text('Year'),
+                        hint: Text('Select year'),
                         // isExpanded: true,
                         value: year,
                         iconSize: size.width * 0.02,
@@ -153,6 +215,7 @@ class _AnalysisState extends State<Analysis> {
                         onChanged: (value) async => setState(() {
                           year = value;
                           fetchIncome(year);
+                          fetchIncome2(year);
                           chartmodel.fetchBestSellers('jan', year);
                         }),
                       ),
@@ -161,27 +224,52 @@ class _AnalysisState extends State<Analysis> {
                 ),
               ),
               SizedBox(height: size.height * 0.05),
-              db.CustomersRecord.isEmpty
+              db.CustomersRecord.isEmpty && db.InvoicesRecord.isEmpty
                   ? Center(child: CircularProgressIndicator())
-                  : Row(
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        BuildLeft(
-                            year: year as String,
-                            january: january,
-                            febuary: febuary,
-                            march: march,
-                            april: april,
-                            may: may,
-                            june: june,
-                            july: july,
-                            august: august,
-                            september: september,
-                            october: october,
-                            november: november,
-                            december: december),
-                        BuildRight(
-                            indexForMonthsOfBestSellers:
-                                indexForMonthsOfBestSellers),
+                        Row(
+                          children: [
+                            BuildLeft(
+                                year: year as String,
+                                january: january,
+                                febuary: febuary,
+                                march: march,
+                                april: april,
+                                may: may,
+                                june: june,
+                                july: july,
+                                august: august,
+                                september: september,
+                                october: october,
+                                november: november,
+                                december: december,
+                                january2: january2,
+                                febuary2: febuary2,
+                                march2: march2,
+                                april2: april2,
+                                may2: may2,
+                                june2: june2,
+                                july2: july2,
+                                august2: august2,
+                                september2: september2,
+                                october2: october2,
+                                november2: november2,
+                                december2: december2),
+                            BuildRight(
+                                indexForMonthsOfBestSellers:
+                                    indexForMonthsOfBestSellers),
+                          ],
+                        ),
+                        SizedBox(height: size.height * 0.1),
+                        Text('LOUNGE ANALYSIS',
+                            style: TextStyle(
+                                fontSize: size.width * 0.015,
+                                fontWeight: FontWeight.bold,
+                                color: navyBlueColor)),
+                        BuildBottom(),
+                        SizedBox(height: size.height * 0.01),
                       ],
                     ),
             ],
@@ -208,21 +296,33 @@ class BuildLeft extends StatefulWidget {
       required this.september,
       required this.october,
       required this.november,
-      required this.december})
+      required this.december,
+      required this.january2,
+      required this.febuary2,
+      required this.march2,
+      required this.april2,
+      required this.may2,
+      required this.june2,
+      required this.july2,
+      required this.august2,
+      required this.september2,
+      required this.october2,
+      required this.november2,
+      required this.december2})
       : super(key: key);
   final String year;
-  late int january;
-  late int febuary;
-  late int march;
-  late int april;
-  late int may;
-  late int june;
-  late int july;
-  late int august;
-  late int september;
-  late int october;
-  late int november;
-  late int december;
+  late int january, january2;
+  late int febuary, febuary2;
+  late int march, march2;
+  late int april, april2;
+  late int may, may2;
+  late int june, june2;
+  late int july, july2;
+  late int august, august2;
+  late int september, september2;
+  late int october, october2;
+  late int november, november2;
+  late int december, december2;
 
   @override
   State<BuildLeft> createState() => _BuildLeftState();
@@ -235,16 +335,16 @@ class _BuildLeftState extends State<BuildLeft> {
     var style = TextStyle(
         fontSize: size.width * 0.01,
         fontFamily: 'Biko',
-        color: Colors.black,
+        color: navyBlueColor,
         fontWeight: FontWeight.bold);
     return SizedBox(
       width: size.width * 0.4,
       height: size.height * 0.75,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.05, vertical: size.height * 0.05),
+            padding: EdgeInsets.symmetric(vertical: size.height * 0.05),
             child: Text(
               'TOTAL INCOME  -  Monthly',
               style: style,
@@ -267,21 +367,310 @@ class _BuildLeftState extends State<BuildLeft> {
                   september: widget.september,
                   october: widget.october,
                   november: widget.november,
-                  december: widget.december),
+                  december: widget.december,
+                  january2: widget.january2,
+                  febuary2: widget.febuary2,
+                  march2: widget.march2,
+                  april2: widget.april2,
+                  may2: widget.may2,
+                  june2: widget.june2,
+                  july2: widget.july2,
+                  august2: widget.august2,
+                  september2: widget.september2,
+                  october2: widget.october2,
+                  november2: widget.november2,
+                  december2: widget.december2),
+            ),
+          ),
+          SizedBox(height: size.height * 0.02),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: size.width * 0.02,
+                      height: size.height * 0.02,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: primaryColor2),
+                    ),
+                    SizedBox(width: size.width * 0.01),
+                    Text(
+                      'Income from Rooms',
+                      style: TextStyle(
+                        fontSize: size.width * 0.01,
+                        color: navyBlueColor,
+                      ),
+                    )
+                  ]),
+              SizedBox(width: size.width * 0.05),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: size.width * 0.02,
+                      height: size.height * 0.02,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: primaryColor),
+                    ),
+                    SizedBox(width: size.width * 0.01),
+                    Text(
+                      'Income from Lounge',
+                      style: TextStyle(
+                        fontSize: size.width * 0.01,
+                        color: navyBlueColor,
+                      ),
+                    )
+                  ]),
+            ],
+          ),
+          SizedBox(height: size.height * 0.04),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.004),
+              Text('Click on each month to view total income for that month.',
+                  style: TextStyle(
+                      color: navyBlueColor, fontSize: size.width * 0.012)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BuildBottom extends StatefulWidget {
+  const BuildBottom({Key? key}) : super(key: key);
+
+  @override
+  State<BuildBottom> createState() => _BuildBottomState();
+}
+
+class _BuildBottomState extends State<BuildBottom> {
+  final monthsOfBestSellers = [
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec',
+    'nil'
+  ];
+  late int indexForMonthsOfBestSellers = 0;
+
+  late Set drinks = {};
+  late List drinks2 = [];
+  late List drinks3 = [];
+  late List totalDrinks = [];
+  late num totalIncomeForItem = 0;
+
+  // function to get each drink sold and their quantities sold respestively
+  fetchDrinksSold(month, year) {
+    drinks = {};
+    drinks2 = [];
+    drinks3 = [];
+    totalDrinks = [];
+    totalIncomeForItem = 0;
+    if (month == 'jan') {
+      month = '01';
+    } else if (month == 'feb') {
+      month = '02';
+    } else if (month == 'mar') {
+      month = '03';
+    } else if (month == 'apr') {
+      month = '04';
+    } else if (month == 'may') {
+      month = '05';
+    } else if (month == 'jun') {
+      month = '06';
+    } else if (month == 'jul') {
+      month = '07';
+    } else if (month == 'aug') {
+      month = '08';
+    } else if (month == 'sep') {
+      month = '09';
+    } else if (month == 'oct') {
+      month = '10';
+    } else if (month == 'nov') {
+      month = '11';
+    } else {
+      month = '12';
+    }
+    for (var item in db.InvoicesRecord) {
+      if (year == item['date'].split('-')[2]) {
+        if (month == item['date'].split('-')[1]) {
+          for (var item2 in item['cartalog']) {
+            drinks.add(item2[0]);
+          }
+        }
+      }
+    }
+    for (var data in drinks) {
+      drinks3.add(data);
+    }
+    for (var item in drinks) {
+      for (var item2 in db.InvoicesRecord) {
+        if (year == item2['date'].split('-')[2]) {
+          if (month == item2['date'].split('-')[1]) {
+            for (var item3 in item2['cartalog']) {
+              if (item3[0] == item) {
+                drinks2.add(item3);
+              }
+            }
+          }
+        }
+      }
+    }
+    for (var item in drinks) {
+      totalIncomeForItem = 0;
+      for (var item2 in drinks2.where((element) => element[0] == item)) {
+        totalIncomeForItem += int.parse(item2[1]);
+      }
+      totalDrinks.add(totalIncomeForItem.toInt());
+    }
+    // print(totalDrinks);
+    // print(totalDrinks.length);
+  }
+
+  List<charts.Series<chartmodel.BarChartModel, String>> _createSampleData() {
+    var data = [
+      for (var item1 in db.InvoicesRecord)
+        for (var item2 in item1['cartalog'])
+          chartmodel.BarChartModel(
+              '${item2[0]}',
+              totalDrinks[drinks3.indexOf(item2[0])],
+              charts.ColorUtil.fromDartColor(primaryColor2))
+    ];
+
+    return [
+      charts.Series(
+          id: "Total Income",
+          data: data,
+          domainFn: (chartmodel.BarChartModel series, _) => series.month,
+          measureFn: (chartmodel.BarChartModel series, _) => series.income,
+          colorFn: (chartmodel.BarChartModel series, _) => series.color),
+    ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDrinksSold(monthsOfBestSellers[indexForMonthsOfBestSellers], year);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    var style = TextStyle(
+        fontSize: size.width * 0.01,
+        fontFamily: 'Biko',
+        color: navyBlueColor,
+        fontWeight: FontWeight.bold);
+    return SizedBox(
+      width: size.width * 0.9,
+      height: size.height * 0.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: size.height * 0.05),
+            child: Text(
+              'Best Sellers (Drinks)  -  Monthly',
+              style: style,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  monthsOfBestSellers[indexForMonthsOfBestSellers]
+                      .toTitleCase(),
+                  style: TextStyle(
+                      fontFamily: 'Biko', fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                            child: Text('Prev',
+                                style: TextStyle(color: primaryColor)),
+                            onPressed: () {
+                              if (year != null && year != '') {
+                                if (indexForMonthsOfBestSellers <
+                                    monthsOfBestSellers.length - 1) {
+                                  indexForMonthsOfBestSellers != 0
+                                      ? setState(() {
+                                          indexForMonthsOfBestSellers--;
+                                          fetchDrinksSold(
+                                              monthsOfBestSellers[
+                                                  indexForMonthsOfBestSellers],
+                                              year);
+                                          _createSampleData();
+                                        })
+                                      : null;
+                                }
+                              }
+                            }),
+                        TextButton(
+                            child: Text('Next',
+                                style: TextStyle(color: primaryColor)),
+                            onPressed: () {
+                              if (year != null && year != '') {
+                                if (indexForMonthsOfBestSellers <
+                                    monthsOfBestSellers.length - 1) {
+                                  indexForMonthsOfBestSellers != 11
+                                      ? setState(() {
+                                          indexForMonthsOfBestSellers++;
+                                          fetchDrinksSold(
+                                              monthsOfBestSellers[
+                                                  indexForMonthsOfBestSellers],
+                                              year);
+                                          _createSampleData();
+                                        })
+                                      : null;
+                                }
+                              }
+                            }),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+            child: SizedBox(
+              height: size.height * 0.5,
+              child: drinks.isNotEmpty
+                  ? BuildBarChart2(dataList: _createSampleData())
+                  : Text('NIL', style: TextStyle(fontSize: size.width * 0.02)),
             ),
           ),
           SizedBox(height: size.height * 0.04),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.035),
-            child: Row(
-              children: [
-                Icon(Icons.info, size: size.width * 0.015),
-                SizedBox(width: size.width * 0.004),
-                Text('Click on each month to view total income for that month.',
-                    style: TextStyle(
-                        color: navyBlueColor, fontSize: size.width * 0.012)),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.004),
+              Text('Click on each drink to view total sold for that month.',
+                  style: TextStyle(
+                      color: navyBlueColor, fontSize: size.width * 0.012)),
+            ],
           ),
         ],
       ),
@@ -305,21 +694,33 @@ class BuildBarChart extends StatefulWidget {
       required this.september,
       required this.october,
       required this.november,
-      required this.december})
+      required this.december,
+      required this.january2,
+      required this.febuary2,
+      required this.march2,
+      required this.april2,
+      required this.may2,
+      required this.june2,
+      required this.july2,
+      required this.august2,
+      required this.september2,
+      required this.october2,
+      required this.november2,
+      required this.december2})
       : super(key: key);
   final String year;
-  late int january;
-  late int febuary;
-  late int march;
-  late int april;
-  late int may;
-  late int june;
-  late int july;
-  late int august;
-  late int september;
-  late int october;
-  late int november;
-  late int december;
+  late int january, january2;
+  late int febuary, febuary2;
+  late int march, march2;
+  late int april, april2;
+  late int may, may2;
+  late int june, june2;
+  late int july, july2;
+  late int august, august2;
+  late int september, september2;
+  late int october, october2;
+  late int november, november2;
+  late int december, december2;
 
   @override
   _BuildBarChartState createState() => _BuildBarChartState();
@@ -330,35 +731,67 @@ class _BuildBarChartState extends State<BuildBarChart> {
 
   List<charts.Series<chartmodel.BarChartModel, String>> _createSampleData() {
     var data = [
-      chartmodel.BarChartModel('Jan', widget.january,
-          charts.ColorUtil.fromDartColor(Colors.orangeAccent)),
       chartmodel.BarChartModel(
-          'Feb', widget.febuary, charts.ColorUtil.fromDartColor(Colors.red)),
+          'Jan', widget.january, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Mar', widget.march, charts.ColorUtil.fromDartColor(Colors.green)),
+          'Feb', widget.febuary, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Apr', widget.april, charts.ColorUtil.fromDartColor(Colors.yellow)),
-      chartmodel.BarChartModel('May', widget.may,
-          charts.ColorUtil.fromDartColor(Colors.lightBlueAccent)),
+          'Mar', widget.march, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Jun', widget.june, charts.ColorUtil.fromDartColor(Colors.pink)),
+          'Apr', widget.april, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Jul', widget.july, charts.ColorUtil.fromDartColor(Colors.indigo)),
+          'May', widget.may, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Aug', widget.august, charts.ColorUtil.fromDartColor(Colors.brown)),
+          'Jun', widget.june, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Sep', widget.september, charts.ColorUtil.fromDartColor(Colors.lime)),
+          'Jul', widget.july, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel(
-          'Oct', widget.october, charts.ColorUtil.fromDartColor(Colors.purple)),
+          'Aug', widget.august, charts.ColorUtil.fromDartColor(primaryColor2)),
+      chartmodel.BarChartModel('Sep', widget.september,
+          charts.ColorUtil.fromDartColor(primaryColor2)),
+      chartmodel.BarChartModel(
+          'Oct', widget.october, charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel('Nov', widget.november,
-          charts.ColorUtil.fromDartColor(Colors.deepOrangeAccent)),
+          charts.ColorUtil.fromDartColor(primaryColor2)),
       chartmodel.BarChartModel('Dec', widget.december,
-          charts.ColorUtil.fromDartColor(Colors.greenAccent)),
+          charts.ColorUtil.fromDartColor(primaryColor2)),
+    ];
+    var data2 = [
+      chartmodel.BarChartModel(
+          'Jan', widget.january2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Feb', widget.febuary2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Mar', widget.march2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Apr', widget.april2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'May', widget.may2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Jun', widget.june2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Jul', widget.july2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Aug', widget.august2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel('Sep', widget.september2,
+          charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel(
+          'Oct', widget.october2, charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel('Nov', widget.november2,
+          charts.ColorUtil.fromDartColor(primaryColor)),
+      chartmodel.BarChartModel('Dec', widget.december2,
+          charts.ColorUtil.fromDartColor(primaryColor)),
     ];
     return [
       charts.Series(
-          id: "Total Income",
+          id: "Rooms",
           data: data,
+          domainFn: (chartmodel.BarChartModel series, _) => series.month,
+          measureFn: (chartmodel.BarChartModel series, _) => series.income,
+          colorFn: (chartmodel.BarChartModel series, _) => series.color),
+      charts.Series(
+          id: "Lounge",
+          data: data2,
           domainFn: (chartmodel.BarChartModel series, _) => series.month,
           measureFn: (chartmodel.BarChartModel series, _) => series.income,
           colorFn: (chartmodel.BarChartModel series, _) => series.color),
@@ -378,19 +811,64 @@ class _BuildBarChartState extends State<BuildBarChart> {
         charts.SelectionModelConfig(
           changedListener: (model) async {
             if (year != null && year != '') {
+              var id = model.selectedSeries[0].displayName;
+              var monthIncome = model.selectedSeries[0]
+                  .measureFn(model.selectedDatum[0].index)
+                  .toString();
               var month = model.selectedSeries[0]
-                  //       .measureFn(model.selectedDatum[0].index)
                   .domainFn(model.selectedDatum[0].index)
                   .toLowerCase();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: primaryColor2,
+                  content: Text(
+                      "Total income for ${month.toTitleCase()} $year, ($id): ${db.HotelCurrency.toUpperCase()} $monthIncome")));
               await Navigator.push(
                   context,
                   CustomPageRoute(
-                      widget: Analysis2(month: month, year: year!)));
+                      widget: Analysis2(month: month, year: year!, isRoom: id == 'Rooms' ? true : false,)));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: errorColor,
                   content: Text("No year selected!")));
             }
+          },
+        )
+      ],
+    );
+  }
+}
+
+class BuildBarChart2 extends StatefulWidget {
+  BuildBarChart2({Key? key, required this.dataList}) : super(key: key);
+  var dataList;
+
+  @override
+  _BuildBarChart2State createState() => _BuildBarChart2State();
+}
+
+class _BuildBarChart2State extends State<BuildBarChart2> {
+  final random = Random();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return charts.BarChart(
+      widget.dataList,
+      selectionModels: [
+        charts.SelectionModelConfig(
+          changedListener: (model) async {
+            var totalSold = model.selectedSeries[0]
+                .measureFn(model.selectedDatum[0].index)
+                .toString();
+            var itemName =
+                model.selectedSeries[0].domainFn(model.selectedDatum[0].index);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: primaryColor2,
+                content: Text("Total bottles of $itemName sold: $totalSold")));
           },
         )
       ],
@@ -452,69 +930,6 @@ class _BuildRightState extends State<BuildRight> {
           measureFn: (chartmodel.PieChartModel series, _) => series.total,
           colorFn: (chartmodel.PieChartModel series, _) => series.color),
     ];
-  }
-
-  downloadEmployeesRecord() async {
-    final downloadFilePathForEmployees =
-        "${Directory.current.path}/downloads/employees.csv";
-    late List liveData = [];
-    late List liveData2 = [];
-
-    final List employeesHeader = [
-      [
-        'Hotel',
-        'First Name',
-        'Last Name',
-        'Gender',
-        'Email Address',
-        'Nationality',
-        'State of Origin',
-        'Phone Number',
-        'Home Address',
-        'Date of Employment',
-        'Designation',
-        'Password',
-      ]
-    ];
-    List<List<dynamic>> employeesRow = [];
-
-    await db.fetchEmployees();
-    int len2 = db.Employees.length + 1;
-    for (var data in db.Employees) {
-      liveData.add(data['hotel']);
-      liveData.add(data['firstname']);
-      liveData.add(data['lastname']);
-      liveData.add(data['gender']);
-      liveData.add(data['emailaddress']);
-      liveData.add(data['nationality']);
-      liveData.add(data['stateoforigin']);
-      liveData.add(data['phonenumber']);
-      liveData.add(data['homeaddress'].toString());
-      liveData.add(data['dateofemployment']);
-      liveData.add(data['designation']);
-      liveData.add(data['password']);
-    }
-    late var x = 0;
-    late var y = 12;
-    for (var i = 1; i < len2; i += 1) {
-      if (i == 1) {
-        liveData2.add(liveData.sublist(x, y));
-      } else if (i > 1) {
-        x += 12;
-        y += 12;
-        liveData2.add(liveData.sublist(x, y));
-      }
-    }
-
-    for (var data in employeesHeader) {
-      employeesRow.add(data);
-    }
-    for (var data in liveData2) {
-      employeesRow.add(data);
-    }
-    String employeesCsv = const ListToCsvConverter().convert(employeesRow);
-    File employeesCsvFile = File(downloadFilePathForEmployees);
-    employeesCsvFile.writeAsString(employeesCsv);
   }
 
   downloadCustomersRecord() async {
@@ -611,12 +1026,12 @@ class _BuildRightState extends State<BuildRight> {
       width: size.width * 0.4,
       height: size.height * 0.75,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.05, vertical: size.height * 0.05),
+            padding: EdgeInsets.symmetric(vertical: size.height * 0.05),
             child: Text(
-              'BEST SELLERS  -  Monthly',
+              'BEST SELLERS (Rooms)  -  Monthly',
               style: style,
             ),
           ),
@@ -721,39 +1136,36 @@ class _BuildRightState extends State<BuildRight> {
             children: [chartmodel.Indicators()],
           ),
           SizedBox(height: size.height * 0.05),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.07),
-            child: Row(
-              children: [
-                Icon(Icons.info, size: size.width * 0.015),
-                SizedBox(width: size.width * 0.002),
-                Text('Download customer records?',
-                    style: TextStyle(
-                        color: navyBlueColor, fontSize: size.width * 0.012)),
-                SizedBox(width: size.width * 0.004),
-                TextButton(
-                  child: Text(
-                    'Download',
-                    style: TextStyle(
-                        color: primaryColor, fontSize: size.width * 0.012),
-                  ),
-                  onPressed: () async {
-                    showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (context) {
-                          return Center(child: CircularProgressIndicator());
-                        });
-                    await downloadCustomersRecord();
-                    await downloadEmployeesRecord();
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        backgroundColor: primaryColor2,
-                        content: Text("Operation succeeded.. Path: downloads/")));
-                  },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.002),
+              Text('Download customer records?',
+                  style: TextStyle(
+                      color: navyBlueColor, fontSize: size.width * 0.012)),
+              SizedBox(width: size.width * 0.004),
+              TextButton(
+                child: Text(
+                  'Download',
+                  style: TextStyle(
+                      color: primaryColor, fontSize: size.width * 0.012),
                 ),
-              ],
-            ),
+                onPressed: () async {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return Center(child: CircularProgressIndicator());
+                      });
+                  await downloadCustomersRecord();
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: primaryColor2,
+                      content: Text("Operation succeeded..")));
+                },
+              ),
+            ],
           )
         ],
       ),

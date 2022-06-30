@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables, must_be_immutable
 
 import 'package:JoGenics/components/app_bar.dart';
 import 'package:JoGenics/components/title_case.dart';
@@ -10,9 +10,11 @@ import 'package:JoGenics/db.dart' as db;
 import 'package:intl/intl.dart';
 
 class Analysis2 extends StatefulWidget {
-  const Analysis2({Key? key, required this.month, required this.year})
+  Analysis2(
+      {Key? key, required this.month, required this.year, required this.isRoom})
       : super(key: key);
   final String month, year;
+  late bool isRoom;
 
   @override
   State<Analysis2> createState() => _Analysis2State();
@@ -86,19 +88,37 @@ class _Analysis2State extends State<Analysis2> {
       month = monthList[11];
     }
 
-    for (var data in db.CustomersRecord) {
-      if (year == data['checkindate'].split('-')[2]) {
-        if (month == data['checkindate'].split('-')[1]) {
-          monthlyData.add(data);
+    if (widget.isRoom) {
+      for (var data in db.CustomersRecord) {
+        if (year == data['checkindate'].split('-')[2]) {
+          if (month == data['checkindate'].split('-')[1]) {
+            monthlyData.add(data);
+          }
         }
       }
-    }
-    startDate = DateTime(int.parse(year), int.parse(month), 01);
-    endDate = DateTime(int.parse(year), int.parse(month) + 1);
+      startDate = DateTime(int.parse(year), int.parse(month), 01);
+      endDate = DateTime(int.parse(year), int.parse(month) + 1);
 
-    for (var data in monthlyData) {
-      if (date == data['checkindate']) {
-        totalIncome += int.parse(data['totalcost']);
+      for (var data in monthlyData) {
+        if (date == data['checkindate']) {
+          totalIncome += int.parse(data['totalcost']);
+        }
+      }
+    } else {
+      for (var data in db.InvoicesRecord) {
+        if (year == data['date'].split('-')[2]) {
+          if (month == data['date'].split('-')[1]) {
+            monthlyData.add(data);
+          }
+        }
+      }
+      startDate = DateTime(int.parse(year), int.parse(month), 01);
+      endDate = DateTime(int.parse(year), int.parse(month) + 1);
+
+      for (var data in monthlyData) {
+        if (date == data['date']) {
+          totalIncome += int.parse(data['totalcost']);
+        }
       }
     }
   }
@@ -129,9 +149,11 @@ class _Analysis2State extends State<Analysis2> {
             selected1: false,
             selected2: false,
             selected3: false,
-            selected4: true,
+            selected4: false,
             selected5: false,
-            selected6: false,
+            selected6: true,
+            selected7: false,
+            selected8: false,
             selectedPage: () => null),
         rightChild: Container(
           decoration: BoxDecoration(
@@ -199,7 +221,11 @@ class _Analysis2State extends State<Analysis2> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(widget.month.toTitleCase(), style: TextStyle(fontFamily: 'Biko', fontSize: size.width*0.02, color: whiteColor)),
+                      Text(widget.month.toTitleCase(),
+                          style: TextStyle(
+                              fontFamily: 'Biko',
+                              fontSize: size.width * 0.02,
+                              color: whiteColor)),
                       SizedBox(height: size.height * 0.015),
                       Padding(
                           padding: EdgeInsets.symmetric(
@@ -231,6 +257,7 @@ class _Analysis2State extends State<Analysis2> {
             )),
           ),
         ),
-        isLogout: false);
+        isLogout: false,
+        destroyApp: true);
   }
 }

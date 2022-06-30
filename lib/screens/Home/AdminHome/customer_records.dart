@@ -58,12 +58,6 @@ class _CustomerRecordsState extends State<CustomerRecords> {
     });
   }
 
-  // changeIsSearchEmployeeTS2tofalse() {
-  //   setState(() {
-  //     isSearchEmployeeTimeStamp2 = false;
-  //   });
-  // }
-
   getUserData1() async {
     changeIsSearchToFalse();
     return db.CustomerRecordForUpdate;
@@ -75,8 +69,8 @@ class _CustomerRecordsState extends State<CustomerRecords> {
   }
 
   getUserData1c() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
+    // await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
+    //     db.CurrentLoggedInUserPassword);
     return db.CustomersRecord;
   }
 
@@ -501,7 +495,7 @@ class _CustomerRecordsState extends State<CustomerRecords> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: whiteColor2,
+      backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, "Records", blackColor, true),
       body: SingleChildScrollView(
         child: Column(
@@ -639,6 +633,7 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                         dateOfCheckin = date!;
                                         convertDateTimeDisplay1(
                                             dateOfCheckin.toString());
+                              isSearchCustomers = 'searchByDate';
                                       }));
                             },
                           ),
@@ -647,39 +642,39 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                     ),
                   ),
                   SizedBox(height: size.height * 0.015),
-                  Row(
-                    children: [
-                      RoundedButtonMain(
-                          text1: 'Search',
-                          text2: 'Searching...',
-                          fontSize1: size.width * 0.01,
-                          fontSize2: size.width * 0.008,
-                          width: size.width * 0.1,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.02,
-                          radius: size.width * 0.02,
-                          isLoading: false,
-                          function: () {
-                            setState(() {
-                              isSearchCustomers = 'searchByDate';
-                            });
-                          }),
-                      SizedBox(width: size.width * 0.01),
-                      RoundedButtonMain(
-                          text1: 'Delete',
-                          text2: 'Deleting...',
-                          fontSize1: size.width * 0.01,
-                          fontSize2: size.width * 0.008,
-                          width: size.width * 0.1,
-                          horizontalGap: size.width * 0.01,
-                          verticalGap: size.height * 0.02,
-                          radius: size.width * 0.02,
-                          isLoading: false,
-                          function: () async {
-                            await deleteRecord();
-                          }),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                      // RoundedButtonMain(
+                      //     text1: 'Search',
+                      //     text2: 'Searching...',
+                      //     fontSize1: size.width * 0.01,
+                      //     fontSize2: size.width * 0.008,
+                      //     width: size.width * 0.1,
+                      //     horizontalGap: size.width * 0.01,
+                      //     verticalGap: size.height * 0.02,
+                      //     radius: size.width * 0.02,
+                      //     isLoading: false,
+                      //     function: () {
+                      //       setState(() {
+                      //         isSearchCustomers = 'searchByDate';
+                      //       });
+                      //     }),
+                      // SizedBox(width: size.width * 0.01),
+                  //     RoundedButtonMain(
+                  //         text1: 'Delete',
+                  //         text2: 'Deleting...',
+                  //         fontSize1: size.width * 0.01,
+                  //         fontSize2: size.width * 0.008,
+                  //         width: size.width * 0.1,
+                  //         horizontalGap: size.width * 0.01,
+                  //         verticalGap: size.height * 0.02,
+                  //         radius: size.width * 0.02,
+                  //         isLoading: false,
+                  //         function: () async {
+                  //           await deleteRecord();
+                  //         }),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -716,6 +711,12 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                         bottomMargin: 20,
                         showBottomBorder: true,
                         minWidth: size.width * 0.94,
+                        dataRowColor: MaterialStateColor.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.selected)
+                                    ? primaryColor
+                                    : customBackgroundColor),
+                        showCheckboxColumn: false,
                         columns: <DataColumn>[
                           DataColumn(label: Text('Customer Id')),
                           DataColumn(label: Text('First Name')),
@@ -983,6 +984,12 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                         bottomMargin: 20,
                         showBottomBorder: true,
                         minWidth: size.width * 0.65,
+                        dataRowColor: MaterialStateColor.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.selected)
+                                    ? primaryColor
+                                    : customBackgroundColor),
+                        showCheckboxColumn: false,
                         columns: <DataColumn>[
                           DataColumn(label: Text('Employee')),
                           DataColumn(label: Text('Message')),
@@ -1066,6 +1073,12 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                         bottomMargin: 20,
                         showBottomBorder: true,
                         minWidth: size.width * 0.75,
+                        dataRowColor: MaterialStateColor.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.selected)
+                                    ? primaryColor
+                                    : customBackgroundColor),
+                        showCheckboxColumn: false,
                         columns: <DataColumn>[
                           DataColumn(label: Text('Employee')),
                           DataColumn(label: Text('Message')),

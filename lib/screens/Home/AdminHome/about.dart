@@ -7,7 +7,6 @@ import 'package:JoGenics/components/app_bar.dart';
 import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class About extends StatefulWidget {
   const About({Key? key}) : super(key: key);
@@ -108,8 +107,7 @@ class _AboutState extends State<About> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Check for update ?',
-                  style: GoogleFonts.macondo(
-                      textStyle: TextStyle(fontSize: size.width * 0.015))),
+                  style: TextStyle(fontSize: size.width * 0.015)),
               SizedBox(width: size.width * 0.01),
               RoundedButtonMain(
                 text1: 'Check',

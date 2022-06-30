@@ -66,7 +66,7 @@ class _ProfileState extends State<Profile> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${db.CurrentLoggedInUserFirstname.toTitleCase()} ${db.CurrentLoggedInUserLastname.toTitleCase()}',
+                    db.CurrentLoggedInUserFirstname != '' && db.CurrentLoggedInUserLastname != '' ? '${db.CurrentLoggedInUserFirstname.toTitleCase()} ${db.CurrentLoggedInUserLastname.toTitleCase()}' : "${db.CurrentLoggedInUserFirstname} ${db.CurrentLoggedInUserLastname}",
                     // '',
                     style: style1,
                   ),
@@ -100,7 +100,6 @@ class _ProfileState extends State<Profile> {
       fontSize: size.width * 0.013,
       fontWeight: FontWeight.w400,
       color: navyBlueColor,
-      // fontFamily: 'Isocpeur'
     );
     return Container(
       padding: EdgeInsets.symmetric(horizontal: size.width*0.03),
@@ -113,7 +112,7 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: size.height * 0.007),
           Text(
-            db.HotelName.toTitleCase(),
+            db.HotelName != '' ? db.HotelName.toTitleCase() : db.HotelName,
             style: style2,
           ),
           Divider(),
@@ -146,7 +145,7 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: size.height * 0.007),
           Text(
-            db.HotelAddress.toTitleCase(),
+            db.HotelAddress != '' ? db.HotelAddress.toTitleCase() : db.HotelAddress,
             style: style2,
           ),
           Divider(),
@@ -157,7 +156,7 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: size.height * 0.007),
           Text(
-            db.HotelProvince.toTitleCase(),
+            db.HotelProvince != '' ? db.HotelProvince.toTitleCase() : db.HotelProvince,
             style: style2,
           ),
           Divider(),
@@ -168,7 +167,7 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: size.height * 0.007),
           Text(
-            db.HotelCountry.toTitleCase(),
+            db.HotelCountry != '' ? db.HotelCountry.toTitleCase() : db.HotelCountry,
             style: style2,
           ),
           Divider(),
@@ -179,7 +178,7 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: size.height * 0.007),
           Text(
-            db.HotelCurrency.toUpperCase(),
+            db.HotelCurrency != '' ? db.HotelCurrency.toUpperCase() : db.HotelCurrency,
             style: style2,
           ),
           Divider(),

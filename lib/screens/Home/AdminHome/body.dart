@@ -10,6 +10,8 @@ import 'package:JoGenics/screens/Home/AdminHome/administrators.dart';
 import 'package:JoGenics/screens/Home/AdminHome/analysis.dart';
 import 'package:JoGenics/screens/Home/AdminHome/customer_records.dart';
 import 'package:JoGenics/screens/Home/AdminHome/employees.dart';
+import 'package:JoGenics/screens/Home/AdminHome/inventory.dart';
+import 'package:JoGenics/screens/Home/AdminHome/invoices.dart';
 import 'package:JoGenics/screens/Home/AdminHome/profile.dart';
 import 'package:JoGenics/screens/Home/AdminHome/subscription.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,12 @@ class _AdminHomeState extends State<AdminHome> {
     ),
     Center(
       child: CustomerRecords(),
+    ),
+    Center(
+      child: Inventory(),
+    ),
+    Center(
+      child: Invoices(),
     ),
     Center(
       child: db.SubscriptionPackage == 'standard'
@@ -69,6 +77,8 @@ class _AdminHomeState extends State<AdminHome> {
           selected4: false,
           selected5: false,
           selected6: false,
+          selected7: false,
+          selected8: false,
           selectedPage: (value) async {
             setState(() {
               currentIndex = value;
@@ -81,7 +91,7 @@ class _AdminHomeState extends State<AdminHome> {
           child: pages[currentIndex],
         ),
       ),
-      isLogout: true,
+      isLogout: true, destroyApp: true,
     );
   }
 }
@@ -98,6 +108,8 @@ class buildLeftChild extends StatefulWidget {
       required this.selected4,
       required this.selected5,
       required this.selected6,
+      required this.selected7,
+      required this.selected8,
       required this.selectedPage})
       : super(key: key);
   final String fullname;
@@ -108,7 +120,9 @@ class buildLeftChild extends StatefulWidget {
       selected3,
       selected4,
       selected5,
-      selected6;
+      selected6,
+      selected7,
+      selected8;
   late Function selectedPage;
 
   @override
@@ -123,6 +137,8 @@ class _buildLeftChildState extends State<buildLeftChild> {
   late bool selected4 = widget.selected4;
   late bool selected5 = widget.selected5;
   late bool selected6 = widget.selected6;
+  late bool selected7 = widget.selected7;
+  late bool selected8 = widget.selected8;
 
   @override
   Widget build(BuildContext context) {
@@ -150,8 +166,8 @@ class _buildLeftChildState extends State<buildLeftChild> {
                 size3: size.width * 0.01,
                 radius: size.width * 0.02,
                 urlImage: db.CurrentLoggedInUserProfilePicture != ''
-                  ? image
-                  :  AssetImage('assets/images/default_profile_picture.png'),
+                    ? image
+                    : AssetImage('assets/images/default_profile_picture.png'),
                 name: widget.fullname,
                 email: widget.emailaddress,
                 onClicked: () {
@@ -163,17 +179,19 @@ class _buildLeftChildState extends State<buildLeftChild> {
                     selected4 = false;
                     selected5 = false;
                     selected6 = false;
+                    selected7 = false;
                   });
                   widget.selectedPage(0);
                 },
               ),
-              SizedBox(height: size.height * 0.01),
               Divider(color: whiteColor),
-              SizedBox(height: size.height * 0.03),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
-                  size3: size.height * 0.02,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
                   text: 'Administrators',
                   icon: Icons.admin_panel_settings,
                   selected: selected1,
@@ -186,14 +204,17 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = false;
                       selected5 = false;
                       selected6 = false;
+                      selected7 = false;
                     });
                     widget.selectedPage(1);
                   }),
-              SizedBox(height: size.height * 0.02),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
                   size3: size.height * 0.02,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
                   text: 'Employees',
                   icon: Icons.supervised_user_circle_rounded,
                   selected: selected2,
@@ -206,14 +227,17 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = false;
                       selected5 = false;
                       selected6 = false;
+                      selected7 = false;
                     });
                     widget.selectedPage(2);
                   }),
-              SizedBox(height: size.height * 0.02),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
-                  size3: size.height * 0.02,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
                   text: 'Records',
                   icon: Icons.inventory_rounded,
                   selected: selected3,
@@ -226,16 +250,19 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = false;
                       selected5 = false;
                       selected6 = false;
+                      selected7 = false;
                     });
                     widget.selectedPage(3);
                   }),
-              SizedBox(height: size.height * 0.02),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
-                  size3: size.height * 0.02,
-                  text: 'Analysis',
-                  icon: Icons.analytics_rounded,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
+                  text: 'Inventory',
+                  icon: Icons.inventory,
                   selected: selected4,
                   onClicked: () {
                     setState(() {
@@ -246,18 +273,20 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = true;
                       selected5 = false;
                       selected6 = false;
+                      selected7 = false;
                     });
                     widget.selectedPage(4);
                   }),
-              SizedBox(height: size.height * 0.01),
-              Divider(color: whiteColor),
-              SizedBox(height: size.height * 0.02),
+              SizedBox(height: size.height * 0.005),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
-                  size3: size.height * 0.02,
-                  text: 'Subscription',
-                  icon: Icons.attach_money_rounded,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
+                  text: 'Invoices',
+                  icon: Icons.receipt,
                   selected: selected5,
                   onClicked: () {
                     setState(() {
@@ -268,16 +297,20 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = false;
                       selected5 = true;
                       selected6 = false;
+                      selected7 = false;
+                      selected8 = false;
                     });
                     widget.selectedPage(5);
                   }),
-              SizedBox(height: size.height * 0.01),
+              SizedBox(height: size.height * 0.005),
               buildNavigationButton(
                   size1: size.width * 0.01,
                   size2: size.width * 0.028,
-                  size3: size.height * 0.02,
-                  text: 'About',
-                  icon: Icons.adobe_outlined,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
+                  text: 'Analysis',
+                  icon: Icons.analytics_rounded,
                   selected: selected6,
                   onClicked: () {
                     setState(() {
@@ -288,8 +321,59 @@ class _buildLeftChildState extends State<buildLeftChild> {
                       selected4 = false;
                       selected5 = false;
                       selected6 = true;
+                      selected7 = false;
+                      selected8 = false;
                     });
                     widget.selectedPage(6);
+                  }),
+              Divider(color: whiteColor),
+              SizedBox(height: size.height * 0.005),
+              buildNavigationButton(
+                  size1: size.width * 0.01,
+                  size2: size.width * 0.028,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
+                  text: 'Subscription',
+                  icon: Icons.attach_money_rounded,
+                  selected: selected7,
+                  onClicked: () {
+                    setState(() {
+                      selected0 = false;
+                      selected1 = false;
+                      selected2 = false;
+                      selected3 = false;
+                      selected4 = false;
+                      selected5 = false;
+                      selected6 = false;
+                      selected7 = true;
+                      selected8 = false;
+                    });
+                    widget.selectedPage(7);
+                  }),
+              SizedBox(height: size.height * 0.005),
+              buildNavigationButton(
+                  size1: size.width * 0.01,
+                  size2: size.width * 0.028,
+                  size3: size.height * 0.015,
+                  horizontalGap: size.width * 0.015,
+                  minPadding: size.height * 0.03,
+                  text: 'About',
+                  icon: Icons.adobe_outlined,
+                  selected: selected8,
+                  onClicked: () {
+                    setState(() {
+                      selected0 = false;
+                      selected1 = false;
+                      selected2 = false;
+                      selected3 = false;
+                      selected4 = false;
+                      selected5 = false;
+                      selected6 = false;
+                      selected7 = false;
+                      selected8 = true;
+                    });
+                    widget.selectedPage(8);
                   }),
             ],
           ),
@@ -364,6 +448,8 @@ class _buildLeftChildState extends State<buildLeftChild> {
     required double size1,
     size2,
     size3,
+    horizontalGap,
+    minPadding,
     required String text,
     required IconData icon,
     required bool selected,
@@ -372,8 +458,8 @@ class _buildLeftChildState extends State<buildLeftChild> {
     const color = whiteColor;
 
     return ListTile(
-      horizontalTitleGap: size3,
-      minVerticalPadding: 24,
+      horizontalTitleGap: horizontalGap,
+      minVerticalPadding: minPadding,
       leading: Icon(icon, color: color, size: size2),
       title: Text(
         text,

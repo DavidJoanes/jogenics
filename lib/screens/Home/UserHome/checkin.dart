@@ -499,6 +499,10 @@ class _CheckInState extends State<CheckIn> {
                                     color: primaryColor,
                                     size: size.width * 0.025,
                                     onPressed: () async {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content:
+                                                  Text("Please wait..")));
                                       await generateCustomerID();
                                     }),
                               ],
