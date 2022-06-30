@@ -9,6 +9,7 @@ import 'package:JoGenics/components/rounded_input_field.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 
 class CheckOut extends StatefulWidget {
@@ -314,22 +315,22 @@ class _CheckOutState extends State<CheckOut> {
                                           selectedData[0][16],
                                           selectedData[0][17]) ==
                                       true) {
-                                                timeStamp = DateTime.now();
-                                                convertDateTimeDisplay3();
-                                                await db.insertCheckInCheckOutTimeStamp(
-                                                    '${db.CurrentLoggedInUserFirstname} ${db.CurrentLoggedInUserLastname}',
-                                                    'checked out',
-                                                    selectedData[0][1],
-                                                    selectedData[0][2],
-                                                    selectedData[0][8],
-                                                    selectedData[0][9],
-                                                    selectedData[0][10],
-                                                    selectedData[0][11],
-                                                    selectedData[0][12],
-                                                    selectedData[0][13],
-                                                    selectedData[0][17],
-                                                    timestampDate,
-                                                    timestampHourMinSec);
+                                    timeStamp = DateTime.now();
+                                    convertDateTimeDisplay3();
+                                    await db.insertCheckInCheckOutTimeStamp(
+                                        '${db.CurrentLoggedInUserFirstname} ${db.CurrentLoggedInUserLastname}',
+                                        'checked out',
+                                        selectedData[0][1],
+                                        selectedData[0][2],
+                                        selectedData[0][8],
+                                        selectedData[0][9],
+                                        selectedData[0][10],
+                                        selectedData[0][11],
+                                        selectedData[0][12],
+                                        selectedData[0][13],
+                                        selectedData[0][17],
+                                        timestampDate,
+                                        timestampHourMinSec);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                             backgroundColor: primaryColor2,
@@ -409,6 +410,55 @@ class _CheckOutState extends State<CheckOut> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        spacing: size.height * 0.02,
+        spaceBetweenChildren: size.height * 0.01,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: Colors.redAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.remove),
+            label: 'Check out',
+            onTap: () async {
+              await checkOutCustomer();
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search guest',
+            onTap: () async {
+              final form = _formKeyLastName.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchCustomerCheckOut = true;
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Please wait..")));
+              setState(() {
+                selectedData.clear();
+                lastNameController.text = '';
+                isSearchCustomerCheckOut = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: buildAppBar(context, 'Check Out', blackColor, true),
       body: Column(
@@ -431,80 +481,22 @@ class _CheckOutState extends State<CheckOut> {
         child: Column(
           children: [
             SizedBox(height: size.height * 0.01),
-            Row(
-              children: [
-                SizedBox(
-                  height: size.height * 0.15,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Form(
-                            key: _formKeyLastName,
-                            child: RoundedInputFieldMain(
-                                controller: lastNameController,
-                                width: size.width * 0.2,
-                                horizontalGap: size.width * 0.01,
-                                verticalGap: size.height * 0.001,
-                                radius: size.width * 0.005,
-                                mainText: '',
-                                labelText: 'Search by last name',
-                                icon: Icons.person,
-                                isEnabled: true,
-                                onChanged: (value) {
-                                  value = lastNameController.text.trim();
-                                })),
-                        SizedBox(width: size.width * 0.015),
-                        RoundedButtonMain(
-                            text1: 'Search',
-                            text2: 'Searching...',
-                            fontSize1: size.width * 0.01,
-                            fontSize2: size.width * 0.008,
-                            width: size.width * 0.1,
-                            horizontalGap: size.width * 0.01,
-                            verticalGap: size.height * 0.02,
-                            radius: size.width * 0.02,
-                            isLoading: false,
-                            function: () async {
-                              final form = _formKeyLastName.currentState!;
-                              if (form.validate()) {
-                                setState(() {
-                                  isSearchCustomerCheckOut = true;
-                                });
-                              }
-                            }),
-                        SizedBox(width: size.width * 0.015),
-                        RoundedButtonMain(
-                            text1: 'Check Out',
-                            text2: 'Processing...',
-                            fontSize1: size.width * 0.01,
-                            fontSize2: size.width * 0.008,
-                            width: size.width * 0.1,
-                            horizontalGap: size.width * 0.01,
-                            verticalGap: size.height * 0.02,
-                            radius: size.width * 0.02,
-                            isLoading: false,
-                            function: () async {
-                              await checkOutCustomer();
-                            }),
-                        SizedBox(width: size.width * 0.015),
-                        IconButton(
-                            icon: Icon(Icons.refresh,
-                                size: size.width * 0.02, color: primaryColor),
-                            onPressed: () async {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Please wait..")));
-                              setState(() {
-                                lastNameController.text = '';
-                                isSearchCustomerCheckOut = null;
-                              });
-                            }),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            Center(
+              child: Form(
+                  key: _formKeyLastName,
+                  child: RoundedInputFieldMain(
+                      controller: lastNameController,
+                      width: size.width * 0.3,
+                      horizontalGap: size.width * 0.01,
+                      verticalGap: size.height * 0.001,
+                      radius: size.width * 0.005,
+                      mainText: '',
+                      labelText: 'Search by last name',
+                      icon: Icons.person,
+                      isEnabled: true,
+                      onChanged: (value) {
+                        value = lastNameController.text.trim();
+                      })),
             ),
           ],
         ),

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/components/rounded_input_field.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:pdf/widgets.dart' as pdfWidget;
 import 'package:pdf/pdf.dart';
 import 'package:JoGenics/constants.dart';
@@ -430,6 +431,118 @@ class _SalesState extends State<Sales> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: primaryColor2,
+        overlayColor: navyBlueColor,
+        spacing: size.height*0.02,
+        spaceBetweenChildren: size.height*0.01,
+        overlayOpacity: 0.4,
+        children: [
+          SpeedDialChild(
+            backgroundColor: errorColor,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.delete),
+            label: 'Clear cart',
+            onTap: () async {
+              if (cartalog.isNotEmpty) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return dialog.ReturnDialog4(
+                        title: Text('Confirm'),
+                        message: 'Do you wish to clear cartalog?',
+                        color: navyBlueColor,
+                        button1Text: 'No',
+                        onPressed1: () {
+                          Navigator.of(context).pop();
+                        },
+                        button2Text: 'Yes',
+                        onPressed2: () {
+                          Navigator.of(context).pop();
+                          clearCart();
+                        },
+                      );
+                    });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: errorColor,
+                    content: Text("Cartalog is empty!")));
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.redAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.remove),
+            label: 'Remove item',
+            onTap: () async {
+              if (selectedData2.isNotEmpty) {
+                if (selectedData2.length == 1) {
+                  print(selectedData2);
+                  print(tempList);
+                  setState(() {
+                    cartalog.removeWhere(
+                        (element) => element[0] == selectedData2[0][0]);
+                    tempList.remove(selectedData2[0][0].toLowerCase());
+                    selectedData2.removeAt(0);
+                  });
+                  num totalPrice = 0;
+                  if (cartalog.isNotEmpty) {
+                    for (var data in cartalog) {
+                      totalPrice += int.parse(data[2]);
+                      setState(() {
+                        total = totalPrice as int;
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      total = 0;
+                    });
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: errorColor,
+                      content: Text("Invalid selection!")));
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: errorColor,
+                    content: Text("No item in cartalog selected!")));
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.amberAccent,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.search_rounded),
+            label: 'Search product',
+            onTap: () async {
+              final form = _formKeySearchProduct.currentState!;
+              if (form.validate()) {
+                setState(() {
+                  selectedData.clear();
+                  isSearchInventory2 = true;
+                });
+              }
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: primaryColor2,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.refresh_rounded),
+            label: 'Refresh',
+            onTap: () async {
+              generateInvoiceNumber();
+              setState(() {
+                selectedData.clear();
+                productController.text = '';
+                isSearchInventory2 = null;
+              });
+            },
+          ),
+        ],
+      ),
       backgroundColor: customBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
@@ -934,7 +1047,7 @@ class _SalesState extends State<Sales> {
           ),
           SizedBox(height: size.height * 0.02),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Form(
                   key: _formKeySearchProduct,
@@ -951,34 +1064,6 @@ class _SalesState extends State<Sales> {
                       onChanged: (value) {
                         value = productController.text.trim();
                       })),
-              SizedBox(width: size.width * 0.02),
-              IconButton(
-                  icon: Icon(Icons.search,
-                      size: size.width * 0.02, color: primaryColor),
-                  onPressed: () async {
-                    final form = _formKeySearchProduct.currentState!;
-                    if (form.validate()) {
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(content: Text("Please wait..")));
-                      setState(() {
-                        isSearchInventory2 = true;
-                      });
-                    }
-                  }),
-              SizedBox(width: size.width * 0.02),
-              IconButton(
-                  icon: Icon(Icons.refresh,
-                      size: size.width * 0.02, color: primaryColor),
-                  onPressed: () async {
-                    // ScaffoldMessenger.of(context)
-                    //     .showSnackBar(SnackBar(content: Text("Please wait..")));
-                    generateInvoiceNumber();
-                    setState(() {
-                      productController.text = '';
-                      isSearchInventory2 = null;
-                    });
-                  }),
-              SizedBox(width: size.width * 0.02),
               Form(
                 key: _formKeyPOSConfirmation,
                 child: RoundedInputFieldMain2c(
@@ -1033,7 +1118,7 @@ class _SalesState extends State<Sales> {
                     });
                   },
                   icon: Icon(Icons.add, size: size.width * 0.015)),
-              SizedBox(width: size.width * 0.1),
+              SizedBox(width: size.width * 0.45),
               // RoundedButtonMain(
               //     text1: 'Update Inventory',
               //     text2: 'Updating...',
@@ -1119,97 +1204,6 @@ class _SalesState extends State<Sales> {
               //             content: Text("Cartalog is empty!")));
               //       }
               //     }),
-              SizedBox(width: size.width * 0.1),
-              RoundedButtonMain(
-                  text1: 'Remove Item',
-                  text2: 'Removing...',
-                  fontSize1: size.width * 0.01,
-                  fontSize2: size.width * 0.008,
-                  width: size.width * 0.1,
-                  horizontalGap: size.width * 0.01,
-                  verticalGap: size.height * 0.02,
-                  radius: size.width * 0.02,
-                  isLoading: false,
-                  function: () async {
-                    if (selectedData2.isNotEmpty) {
-                      if (selectedData2.length == 1) {
-                        print(selectedData2);
-                        print(tempList);
-                        setState(() {
-                          cartalog.removeWhere(
-                              (element) => element[0] == selectedData2[0][0]);
-                          tempList.remove(selectedData2[0][0].toLowerCase());
-                          selectedData2.removeAt(0);
-                        });
-                        num totalPrice = 0;
-                        if (cartalog.isNotEmpty) {
-                          for (var data in cartalog) {
-                            totalPrice += int.parse(data[2]);
-                            setState(() {
-                              total = totalPrice as int;
-                            });
-                          }
-                        } else {
-                          setState(() {
-                            total = 0;
-                          });
-                        }
-                        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //     backgroundColor: primaryColor2,
-                        //     content: Text("Operation succeeded..")));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: errorColor,
-                            content: Text("Invalid selection!")));
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: errorColor,
-                          content: Text("No item in cartalog selected!")));
-                    }
-                  }),
-              SizedBox(width: size.width * 0.01),
-              RoundedButtonMain(
-                  text1: 'Clear Cart',
-                  text2: 'Clearing...',
-                  fontSize1: size.width * 0.01,
-                  fontSize2: size.width * 0.008,
-                  width: size.width * 0.1,
-                  horizontalGap: size.width * 0.01,
-                  verticalGap: size.height * 0.02,
-                  radius: size.width * 0.02,
-                  isLoading: false,
-                  function: () async {
-                    if (cartalog.isNotEmpty) {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return dialog.ReturnDialog4(
-                              title: Text('Confirm'),
-                              message: 'Do you wish to clear cartalog?',
-                              color: navyBlueColor,
-                              button1Text: 'No',
-                              onPressed1: () {
-                                Navigator.of(context).pop();
-                              },
-                              button2Text: 'Yes',
-                              onPressed2: () {
-                                Navigator.of(context).pop();
-                                clearCart();
-                                // ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(
-                                //         backgroundColor: primaryColor2,
-                                //         content:
-                                //             Text("Operation succeeded..")));
-                              },
-                            );
-                          });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: errorColor,
-                          content: Text("Cartalog is empty!")));
-                    }
-                  }),
             ],
           ),
         ],

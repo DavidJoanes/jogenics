@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, unused_catch_clause, use_build_context_synchronously
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mongo_dart/mongo_dart.dart' show Db;
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/db.dart' as db;
@@ -368,6 +369,94 @@ class _CheckInState extends State<CheckIn> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          backgroundColor: primaryColor2,
+          overlayColor: navyBlueColor,
+          spacing: size.height * 0.02,
+          spaceBetweenChildren: size.height * 0.01,
+          overlayOpacity: 0.4,
+          children: [
+            SpeedDialChild(
+                backgroundColor: Colors.amberAccent,
+                foregroundColor: whiteColor,
+                child: Icon(Icons.search_rounded),
+                label: 'Search guest',
+                onTap: () async {
+                  final form = _formKeySearch.currentState!;
+                  if (form.validate()) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("Please wait..")));
+                    if (await db.fetchCustomer(customerIDController.text) ==
+                        true) {
+                      setState(() {
+                        isSearchForUpdate = true;
+                        customerID = '';
+                        firstNameController.text =
+                            db.CustomerRecordForUpdate[0]['firstname'];
+                        lastNameController.text =
+                            db.CustomerRecordForUpdate[0]['lastname'];
+                        gender = db.CustomerRecordForUpdate[0]['gender']
+                            .toUpperCase();
+                        // nationality = db
+                        //     .CustomerRecordForUpdate[0]
+                        //         ['nationality']
+                        //     .toUpperCase();
+                        // stateOfOrigin = db
+                        //     .CustomerRecordForUpdate[0]
+                        //         ['stateoforigin']
+                        //     .toUpperCase();
+                        emailController.text =
+                            db.CustomerRecordForUpdate[0]['emailaddress'];
+                        phoneController.text =
+                            db.CustomerRecordForUpdate[0]['phonenumber'];
+                        identification = db.CustomerRecordForUpdate[0]
+                                ['modeofidentification']
+                            .toUpperCase();
+                        idController.text =
+                            db.CustomerRecordForUpdate[0]['idnumber'];
+                        room = db.CustomerRecordForUpdate[0]['roomtype']
+                            .toUpperCase();
+                        roomno = db.CustomerRecordForUpdate[0]['roomnumber'];
+                        checkin1 = db.CustomerRecordForUpdate[0]['checkindate'];
+                        checkout1 =
+                            db.CustomerRecordForUpdate[0]['checkoutdate'];
+                        bill = db.CustomerRecordForUpdate[0]['billtype']
+                            .toUpperCase();
+                        discountController.text =
+                            db.CustomerRecordForUpdate[0]['discount'];
+                        posRefOrConfirmation = db.CustomerRecordForUpdate[0]
+                                ['modeofpayment']
+                            .toUpperCase();
+                        posRefController.text = db.CustomerRecordForUpdate[0]
+                            ['posreferenceorconfirmation'];
+                        duration = int.parse(
+                            db.CustomerRecordForUpdate[0]['duration']);
+                        totalCost = int.parse(
+                            db.CustomerRecordForUpdate[0]['totalcost']);
+                        reconvertCheckindate();
+                        reconvertCheckoutdate();
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: errorColor,
+                          content: Text("Invalid customer id!")));
+                    }
+                  }
+                }),
+            SpeedDialChild(
+              backgroundColor: primaryColor2,
+              foregroundColor: whiteColor,
+              child: Icon(Icons.refresh_rounded),
+              label: 'Generate ID',
+              onTap: () async {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Please wait..")));
+                await generateCustomerID();
+              },
+            ),
+          ],
+        ),
         backgroundColor: customBackgroundColor,
         appBar: buildAppBar(context, 'Check In', blackColor, true),
         body: SizedBox(
@@ -409,102 +498,6 @@ class _CheckInState extends State<CheckIn> {
                                     style: TextStyle(
                                         fontSize: size.width * 0.01,
                                         fontFamily: 'Biko')),
-                                SizedBox(width: size.width * 0.02),
-                                RoundedButtonSearch(
-                                    color: primaryColor,
-                                    size: size.width * 0.025,
-                                    onPressed: () async {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text("Please wait..")));
-                                      if (await db.fetchCustomer(
-                                              customerIDController.text) ==
-                                          true) {
-                                        setState(() {
-                                          isSearchForUpdate = true;
-                                          customerID = '';
-                                          firstNameController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['firstname'];
-                                          lastNameController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['lastname'];
-                                          gender = db.CustomerRecordForUpdate[0]
-                                                  ['gender']
-                                              .toUpperCase();
-                                          // nationality = db
-                                          //     .CustomerRecordForUpdate[0]
-                                          //         ['nationality']
-                                          //     .toUpperCase();
-                                          // stateOfOrigin = db
-                                          //     .CustomerRecordForUpdate[0]
-                                          //         ['stateoforigin']
-                                          //     .toUpperCase();
-                                          emailController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['emailaddress'];
-                                          phoneController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['phonenumber'];
-                                          identification = db
-                                              .CustomerRecordForUpdate[0]
-                                                  ['modeofidentification']
-                                              .toUpperCase();
-                                          idController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['idnumber'];
-                                          room = db.CustomerRecordForUpdate[0]
-                                                  ['roomtype']
-                                              .toUpperCase();
-                                          roomno = db.CustomerRecordForUpdate[0]
-                                              ['roomnumber'];
-                                          checkin1 =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['checkindate'];
-                                          checkout1 =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['checkoutdate'];
-                                          bill = db.CustomerRecordForUpdate[0]
-                                                  ['billtype']
-                                              .toUpperCase();
-                                          discountController.text =
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['discount'];
-                                          posRefOrConfirmation = db
-                                              .CustomerRecordForUpdate[0]
-                                                  ['modeofpayment']
-                                              .toUpperCase();
-                                          posRefController.text = db
-                                                  .CustomerRecordForUpdate[0]
-                                              ['posreferenceorconfirmation'];
-                                          duration = int.parse(
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['duration']);
-                                          totalCost = int.parse(
-                                              db.CustomerRecordForUpdate[0]
-                                                  ['totalcost']);
-                                          reconvertCheckindate();
-                                          reconvertCheckoutdate();
-                                        });
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                backgroundColor: errorColor,
-                                                content: Text(
-                                                    "Invalid customer id!")));
-                                      }
-                                    }),
-                                SizedBox(width: size.width * 0.02),
-                                RoundedButtonRefresh(
-                                    color: primaryColor,
-                                    size: size.width * 0.025,
-                                    onPressed: () async {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content:
-                                                  Text("Please wait..")));
-                                      await generateCustomerID();
-                                    }),
                               ],
                             ),
                             SizedBox(height: size.height * 0.05),

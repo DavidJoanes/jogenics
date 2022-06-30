@@ -242,6 +242,8 @@ class _AdministratorsState extends State<Administrators> {
         animatedIcon: AnimatedIcons.menu_close,
         backgroundColor: primaryColor2,
         overlayColor: navyBlueColor,
+        spacing: size.height * 0.02,
+        spaceBetweenChildren: size.height * 0.01,
         overlayOpacity: 0.4,
         children: [
           SpeedDialChild(

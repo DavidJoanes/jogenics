@@ -485,6 +485,8 @@ class _InventoryState extends State<Inventory> {
         animatedIcon: AnimatedIcons.menu_close,
         backgroundColor: primaryColor2,
         overlayColor: navyBlueColor,
+        spacing: size.height * 0.02,
+        spaceBetweenChildren: size.height * 0.01,
         overlayOpacity: 0.4,
         children: [
           SpeedDialChild(
@@ -556,7 +558,7 @@ class _InventoryState extends State<Inventory> {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("Please wait..")));
               setState(() {
-                  selectedData.clear();
+                selectedData.clear();
                 productController.text = '';
                 isSearchInventory = null;
               });
