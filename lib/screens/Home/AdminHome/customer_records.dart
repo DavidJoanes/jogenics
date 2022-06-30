@@ -565,7 +565,7 @@ class _CustomerRecordsState extends State<CustomerRecords> {
             backgroundColor: Colors.teal,
             foregroundColor: whiteColor,
             child: Icon(Icons.calendar_month_rounded),
-            label: 'Search by date (Customers record)',
+            label: 'Search by date - Check-in (Customers record)',
             onTap: () async {
               showDatePicker(
                       context: context,

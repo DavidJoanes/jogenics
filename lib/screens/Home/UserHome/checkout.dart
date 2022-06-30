@@ -45,20 +45,20 @@ class _CheckOutState extends State<CheckOut> {
 
   changeIsSearchToFalse() {
     setState(() {
-      isSearchCustomerCheckOut = false;
+      isSearchCustomerCheckOut = 'false';
     });
   }
 
   getUserData1() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
     changeIsSearchToFalse();
     return db.CustomersRecord;
   }
 
   getUserData1b() async {
-    await db.adminSignIn(db.HotelName, db.CurrentLoggedInUserEmail,
-        db.CurrentLoggedInUserPassword);
+    return db.CustomersRecord;
+  }
+
+  getUserData1c() async {
     return db.CustomersRecord;
   }
 
@@ -102,6 +102,20 @@ class _CheckOutState extends State<CheckOut> {
     }
     print('Individual data = $liveData2');
     return liveData2;
+  }
+
+  late DateTime dateOfCheckout = DateTime.now();
+  late String dateOfCheckout1 = '';
+  late String dateOfCheckout2 = '';
+  String convertDateTimeDisplay1(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('dd-MM-yyyy');
+    final DateTime displayDate = displayFormater.parse(date);
+    final String formatted = serverFormater.format(displayDate);
+    final String formatted2 = serverFormater.format(displayDate);
+    dateOfCheckout2 = formatted;
+    dateOfCheckout1 = formatted;
+    return dateOfCheckout2;
   }
 
   checkOutCustomer() async {
@@ -396,6 +410,7 @@ class _CheckOutState extends State<CheckOut> {
   void initState() {
     changeIsSearchToFalse();
     getUserData2();
+    convertDateTimeDisplay1(dateOfCheckout.toString());
     super.initState();
   }
 
@@ -421,10 +436,29 @@ class _CheckOutState extends State<CheckOut> {
           SpeedDialChild(
             backgroundColor: Colors.redAccent,
             foregroundColor: whiteColor,
-            child: Icon(Icons.remove),
+            child: Icon(Icons.delete),
             label: 'Check out',
             onTap: () async {
               await checkOutCustomer();
+            },
+          ),
+          SpeedDialChild(
+            backgroundColor: Colors.teal,
+            foregroundColor: whiteColor,
+            child: Icon(Icons.calendar_month_rounded),
+            label: 'Search by date (Check-out)',
+            onTap: () async {
+              showDatePicker(
+                      context: context,
+                      initialDate: dateOfCheckout,
+                      firstDate: DateTime(1990),
+                      lastDate: DateTime(2100))
+                  .then((date) => setState(() {
+                        dateOfCheckout = date!;
+                        convertDateTimeDisplay1(dateOfCheckout.toString());
+                        selectedData.clear();
+                        isSearchCustomerCheckOut = 'searchByDate';
+                      }));
             },
           ),
           SpeedDialChild(
@@ -437,7 +471,7 @@ class _CheckOutState extends State<CheckOut> {
               if (form.validate()) {
                 setState(() {
                   selectedData.clear();
-                  isSearchCustomerCheckOut = true;
+                  isSearchCustomerCheckOut = 'true';
                 });
               }
             },
@@ -481,22 +515,31 @@ class _CheckOutState extends State<CheckOut> {
         child: Column(
           children: [
             SizedBox(height: size.height * 0.01),
-            Center(
-              child: Form(
-                  key: _formKeyLastName,
-                  child: RoundedInputFieldMain(
-                      controller: lastNameController,
-                      width: size.width * 0.3,
-                      horizontalGap: size.width * 0.01,
-                      verticalGap: size.height * 0.001,
-                      radius: size.width * 0.005,
-                      mainText: '',
-                      labelText: 'Search by last name',
-                      icon: Icons.person,
-                      isEnabled: true,
-                      onChanged: (value) {
-                        value = lastNameController.text.trim();
-                      })),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Form(
+                    key: _formKeyLastName,
+                    child: RoundedInputFieldMain(
+                        controller: lastNameController,
+                        width: size.width * 0.3,
+                        horizontalGap: size.width * 0.01,
+                        verticalGap: size.height * 0.001,
+                        radius: size.width * 0.005,
+                        mainText: '',
+                        labelText: 'Search by last name',
+                        icon: Icons.person,
+                        isEnabled: true,
+                        onChanged: (value) {
+                          value = lastNameController.text.trim();
+                        })),
+                SizedBox(width: size.width * 0.04),
+                Text(
+                    dateOfCheckout1 == dateOfCheckout2
+                        ? 'Date (Check-out): $dateOfCheckout1'
+                        : dateOfCheckout2,
+                    style: TextStyle(color: navyBlueColor, fontWeight: FontWeight.bold, fontSize: size.width*0.015)),
+              ],
             ),
           ],
         ),
@@ -513,7 +556,9 @@ class _CheckOutState extends State<CheckOut> {
         child: FutureBuilder(
           future: isSearchCustomerCheckOut == null
               ? getUserData1()
-              : getUserData1b(),
+              : isSearchCustomerCheckOut == 'searchByDate'
+                  ? getUserData1b()
+                  : getUserData1c(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return Center(
@@ -551,7 +596,7 @@ class _CheckOutState extends State<CheckOut> {
                           DataColumn(label: Text('Duration')),
                           DataColumn(label: Text('Total Paid')),
                         ],
-                        rows: isSearchCustomerCheckOut == false
+                        rows: isSearchCustomerCheckOut == 'false'
                             ? <DataRow>[
                                 for (var item in liveData2)
                                   DataRow(
@@ -570,26 +615,50 @@ class _CheckOutState extends State<CheckOut> {
                                           DataCell(Text(item2)),
                                       ])
                               ]
-                            : <DataRow>[
-                                for (var item in liveData2)
-                                  if (item[2] == lastNameController.text.trim())
-                                    DataRow(
-                                        selected: selectedData.contains(item),
-                                        onSelectChanged: (isSelected) {
-                                          setState(() {
-                                            final isAdding =
-                                                isSelected != null &&
-                                                    isSelected;
-                                            isAdding
-                                                ? selectedData.add(item)
-                                                : selectedData.remove(item);
-                                          });
-                                        },
-                                        cells: <DataCell>[
-                                          for (var item2 in item.sublist(0))
-                                            DataCell(Text(item2)),
-                                        ]),
-                              ]),
+                            : isSearchCustomerCheckOut == 'searchByDate'
+                                ? <DataRow>[
+                                    for (var item in liveData2)
+                                      if (item[11] == dateOfCheckout2)
+                                        DataRow(
+                                            selected:
+                                                selectedData.contains(item),
+                                            onSelectChanged: (isSelected) {
+                                              setState(() {
+                                                final isAdding =
+                                                    isSelected != null &&
+                                                        isSelected;
+                                                isAdding
+                                                    ? selectedData.add(item)
+                                                    : selectedData.remove(item);
+                                              });
+                                            },
+                                            cells: <DataCell>[
+                                              for (var item2 in item.sublist(0))
+                                                DataCell(Text(item2)),
+                                            ]),
+                                  ]
+                                : <DataRow>[
+                                    for (var item in liveData2)
+                                      if (item[2] ==
+                                          lastNameController.text.trim())
+                                        DataRow(
+                                            selected:
+                                                selectedData.contains(item),
+                                            onSelectChanged: (isSelected) {
+                                              setState(() {
+                                                final isAdding =
+                                                    isSelected != null &&
+                                                        isSelected;
+                                                isAdding
+                                                    ? selectedData.add(item)
+                                                    : selectedData.remove(item);
+                                              });
+                                            },
+                                            cells: <DataCell>[
+                                              for (var item2 in item.sublist(0))
+                                                DataCell(Text(item2)),
+                                            ]),
+                                  ]),
                   ),
                 ],
               );

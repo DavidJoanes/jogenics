@@ -41,7 +41,7 @@ bool? isSearchEmployee;
 bool? isSearchInventory;
 bool? isSearchInventory2;
 bool? isCartalog;
-bool? isSearchCustomerCheckOut;
+String? isSearchCustomerCheckOut;
 String? isSearchEmployeeTimeStamp1;
 // bool? isSearchEmployeeTimeStamp2;
 String? isSearchInvoice;
