@@ -121,6 +121,8 @@ class _RightSideState extends State<RightSide> {
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
                   child: Column(
