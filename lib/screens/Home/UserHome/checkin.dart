@@ -957,7 +957,8 @@ class _CheckInState extends State<CheckIn> {
         bottomNavigationBar: Container(
           color: customBackgroundColor,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 1, horizontal: 15),
+            padding: EdgeInsets.symmetric(
+                vertical: size.height * 0.005, horizontal: size.width * 0.02),
             child: Flex(
               direction: Axis.horizontal,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
