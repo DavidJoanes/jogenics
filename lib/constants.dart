@@ -72,6 +72,6 @@ fetchNextMonthDate() {
 fetchSubscriptionDaysLeft() {
   var today = fetchTodaysDate().split('-')[0];
   var subDate = db.SubscriptionDate.split('-')[0];
-  var daysleft = (int.parse(subDate) + 30) - int.parse(today);
+  var daysleft = (int.parse(subDate)) - int.parse(today);
   return daysleft;
 }
