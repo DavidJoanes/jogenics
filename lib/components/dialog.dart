@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_constructors, depend_on_referenced_packages
 
+import 'package:JoGenics/components/title_case.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:JoGenics/db.dart' as db;
@@ -16,7 +17,7 @@ final mailtoLinkPayment = Mailto(
   to: [db.CompanyEmailAddress],
   subject: 'Subscription Package Purchased',
   body:
-      "Greetings,\n\nI wish to state that I have just purchased the {package name} subscription package.\nPlease, find attached a proof of payment as I duly await your confirmation.\n\nHotel Name:  {name of your hotel}\nHotel's Email Address:  {email address of your hotel}\n ",
+      "Greetings,\n\nI wish to state that I have just purchased the {package name} subscription package.\nPlease, find attached a proof of payment as I duly await your confirmation.\n\nHotel Name:  ${db.HotelName.toTitleCase()}\nHotel's Email Address:  ${db.HotelEmailAddress}\n ",
 );
 
 Future<void> launchInBrowser(String url) async {
