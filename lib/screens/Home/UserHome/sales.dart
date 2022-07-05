@@ -435,8 +435,8 @@ class _SalesState extends State<Sales> {
         animatedIcon: AnimatedIcons.menu_close,
         backgroundColor: primaryColor2,
         overlayColor: navyBlueColor,
-        spacing: size.height*0.02,
-        spaceBetweenChildren: size.height*0.01,
+        spacing: size.height * 0.02,
+        spaceBetweenChildren: size.height * 0.01,
         overlayOpacity: 0.4,
         children: [
           SpeedDialChild(
@@ -461,6 +461,9 @@ class _SalesState extends State<Sales> {
                         onPressed2: () {
                           Navigator.of(context).pop();
                           clearCart();
+                          setState(() {
+                            bookmarksIndex = 0;
+                          });
                         },
                       );
                     });
@@ -780,7 +783,7 @@ class _SalesState extends State<Sales> {
                       print(bookmarksIndex);
                       if (bookmarksIndex < bookmarks.length + 1) {
                         print(bookmarks);
-                        bookmarksIndex >= 0
+                        bookmarksIndex == 0
                             ? setState(() {
                                 tempList.clear();
                                 bookmarksIndex--;
@@ -802,7 +805,32 @@ class _SalesState extends State<Sales> {
                                   tempList.add(data[0].toLowerCase());
                                 }
                               })
-                            : null;
+                            : bookmarksIndex > 0
+                                ? setState(() {
+                                    tempList.clear();
+                                    bookmarksIndex--;
+                                    invoiceNumber = bookmarks[bookmarksIndex]
+                                        ['invoicenumber'];
+                                    lounge = bookmarks[bookmarksIndex]['lounge']
+                                        .toUpperCase();
+                                    waiter =
+                                        bookmarks[bookmarksIndex]['waiter'];
+                                    posRefOrConfirmation =
+                                        bookmarks[bookmarksIndex]
+                                                ['modeofpayment']
+                                            .toUpperCase();
+                                    posRefController.text =
+                                        bookmarks[bookmarksIndex]['posref'];
+                                    total = int.parse(
+                                        bookmarks[bookmarksIndex]['total']);
+                                    cartalog =
+                                        bookmarks[bookmarksIndex]['orders'];
+                                    for (var data in bookmarks[bookmarksIndex]
+                                        ['orders']) {
+                                      tempList.add(data[0].toLowerCase());
+                                    }
+                                  })
+                                : null;
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             backgroundColor: errorColor,
@@ -863,6 +891,7 @@ class _SalesState extends State<Sales> {
                                   if (await db.sellProducts(
                                           invoiceNumber,
                                           currentDate2,
+                                          lounge!.toLowerCase(),
                                           db.CurrentLoggedInUserEmail,
                                           waiter!,
                                           posRefOrConfirmation!,
@@ -1053,7 +1082,7 @@ class _SalesState extends State<Sales> {
                   key: _formKeySearchProduct,
                   child: RoundedInputFieldMain(
                       controller: productController,
-                      width: size.width * 0.17,
+                      width: size.width * 0.3,
                       horizontalGap: size.width * 0.01,
                       verticalGap: size.height * 0.001,
                       radius: size.width * 0.005,

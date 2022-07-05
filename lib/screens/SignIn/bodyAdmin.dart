@@ -50,7 +50,7 @@ class _SignInBodyAdminState extends State<SignInBodyAdmin> {
     return Scaffold(
       body: MainWindow(
         backButton: BackButton(color: primaryColor),
-        destroyApp: false,
+        destroyApp: true,
         child: Row(
           children: [
             LeftSide(),

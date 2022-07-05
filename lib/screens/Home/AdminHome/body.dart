@@ -91,7 +91,7 @@ class _AdminHomeState extends State<AdminHome> {
           child: pages[currentIndex],
         ),
       ),
-      isLogout: true, destroyApp: true,
+      isLogout: true, destroyApp: false,
     );
   }
 }

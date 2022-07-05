@@ -711,8 +711,8 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                 color: primaryColor),
                             title: Text(
                                 dateOfCheckin1 == dateOfCheckin2
-                                    ? 'Date: ($dateOfCheckin1)'
-                                    : dateOfCheckin2,
+                                    ? 'Date:   $dateOfCheckin1'
+                                    : 'Date:   $dateOfCheckin2',
                                 style: TextStyle(color: Colors.black54))),
                       ],
                     ),
@@ -913,11 +913,11 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                 ),
                 child: ListTile(
                   leading:
-                      Icon(Icons.edit_location_rounded, color: primaryColor),
+                      Icon(Icons.calendar_month_rounded, color: primaryColor),
                   title: Text(
                       timeStampDate1 == timeStampDate2
-                          ? 'Date: ($timeStampDate1)'
-                          : timeStampDate2,
+                          ? 'Date:   $timeStampDate1'
+                          : 'Date:   $timeStampDate2',
                       style: TextStyle(color: Colors.black54)),
                 ),
               ),

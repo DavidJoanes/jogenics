@@ -932,9 +932,10 @@ updateProductQuantity(productid, productname, quantity, costprice, mrp, lounge,
   }
 }
 
-sellProducts(invoicenumber, date, bartender, waiter, modeofpayment,
+sellProducts(invoicenumber, date, lounge, bartender, waiter, modeofpayment,
     posreforconfirmation, totalcost, cartalog) async {
   invoicenumber = invoicenumber.toString();
+  lounge = lounge.toLowerCase();
   bartender = bartender.toLowerCase();
   waiter = waiter.toLowerCase();
   modeofpayment = modeofpayment.toLowerCase();
@@ -951,6 +952,7 @@ sellProducts(invoicenumber, date, bartender, waiter, modeofpayment,
     final insert = await dbClient.insert(<String, dynamic>{
       'invoicenumber': invoicenumber,
       'date': date,
+      'lounge': lounge,
       'bartender': bartender,
       'waiter': waiter,
       'modeofpayment': modeofpayment,

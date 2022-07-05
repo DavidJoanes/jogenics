@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, non_constant_identifier_names
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/app_bar.dart';
@@ -19,7 +19,15 @@ class Invoices extends StatefulWidget {
 
 class _InvoicesState extends State<Invoices> {
   final _formKey = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
   final invoiceNumberController = TextEditingController();
+  final loungeController = TextEditingController();
+  final lounges = {'', 'REGULAR', 'VIP'};
+  DropdownMenuItem<String> buildLounges(String Lounge) => DropdownMenuItem(
+      value: Lounge,
+      child: Text(
+        Lounge,
+      ));
 
   late DateTime dateOfInvoice = DateTime.now();
   late String dateOfInvoice1 = '';
@@ -48,12 +56,18 @@ class _InvoicesState extends State<Invoices> {
     return dateOfInvoice2;
   }
 
-  changeIsSearchInvoiceToByDate() {
+  changeIsSearchInvoiceToByNumber() {
     setState(() {
       isSearchCustomers = 'searchByNumber';
     });
   }
 
+  changeIsSearchInvoiceToByLounge() {
+    setState(() {
+      isSearchCustomers = 'searchByLounge';
+    });
+  }
+  
   changeIsSearchInvoiceTofalse() {
     setState(() {
       isSearchInvoice = 'false';
@@ -66,11 +80,16 @@ class _InvoicesState extends State<Invoices> {
   }
 
   getUserData1b() async {
-    changeIsSearchInvoiceToByDate();
+    changeIsSearchInvoiceToByNumber();
     return db.InvoicesRecord;
   }
 
   getUserData1c() async {
+    changeIsSearchInvoiceToByLounge();
+    return db.InvoicesRecord;
+  }
+
+  getUserData1d() async {
     return db.InvoicesRecord;
   }
 
@@ -90,13 +109,13 @@ class _InvoicesState extends State<Invoices> {
       // liveData.add(data['cartalog']);
     }
     late var x = 0;
-    late var y = 7;
+    late var y = 8;
     for (var i = 1; i < len; i += 1) {
       if (i == 1) {
         liveData2.add(liveData.sublist(x, y));
       } else if (i > 1) {
-        x += 7;
-        y += 7;
+        x += 8;
+        y += 8;
         liveData2.add(liveData.sublist(x, y));
       }
     }
@@ -127,6 +146,8 @@ class _InvoicesState extends State<Invoices> {
 
   @override
   void dispose() {
+    invoiceNumberController.dispose();
+    loungeController.dispose();
     super.dispose();
   }
 
@@ -157,7 +178,7 @@ class _InvoicesState extends State<Invoices> {
                       return dialog.ReturnDialog1(
                         title: SizedBox(
                           width: size.width * 0.7,
-                          height: size.height * 0.5,
+                          height: size.height * 0.1,
                           child: FutureBuilder(
                             future: getUserData1c(),
                             builder: (context, snapshot) {
@@ -324,11 +345,41 @@ class _InvoicesState extends State<Invoices> {
                       hideText: false,
                       hintText: 'Search by invoice number',
                       warningText: 'Enter a valid invoice number',
-                      icon: Icons.shopping_bag_rounded,
+                      icon: Icons.numbers,
                       onChanged: (value) {
                         value = invoiceNumberController.text.trim();
                       })),
-              SizedBox(width: size.width * 0.05),
+              SizedBox(width: size.width * 0.02),
+              Container(
+                width: size.width * 0.22,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(size.width * 0.005),
+                  border: Border.all(color: transparentColor, width: 2),
+                  color: whiteColor,
+                ),
+                child: ListTile(
+                  leading:
+                      Icon(Icons.vertical_shades_sharp, color: primaryColor),
+                  title: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      hint: Text('Select lounge'),
+                      isExpanded: true,
+                      value: lounge,
+                      iconSize: 30,
+                      items: lounges.map(buildLounges).toList(),
+                      onChanged: (value) async => setState(() {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Please wait..")));
+                        lounge = value;
+                        setState(() {
+                          isSearchInvoice = 'searchByLounge';
+                        });
+                      }),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: size.width * 0.02),
               Container(
                 width: size.width * 0.3,
                 decoration: BoxDecoration(
@@ -341,8 +392,8 @@ class _InvoicesState extends State<Invoices> {
                       Icon(Icons.calendar_month_rounded, color: primaryColor),
                   title: Text(
                       dateOfInvoice1 == dateOfInvoice2
-                          ? 'Date: ($dateOfInvoice2)'
-                          : dateOfInvoice1,
+                          ? 'Date:   $dateOfInvoice2'
+                          : 'Date:   $dateOfInvoice1',
                       style: TextStyle(color: Colors.black54)),
                 ),
               ),
@@ -363,9 +414,11 @@ class _InvoicesState extends State<Invoices> {
         child: FutureBuilder(
           future: isSearchInvoice == null
               ? getUserData1()
-              : isSearchCustomers == 'searchByDate'
+              : isSearchCustomers == 'searchByNumber'
                   ? getUserData1b()
-                  : getUserData1c(),
+                  : isSearchCustomers == 'searchByLounge'
+                      ? getUserData1c()
+                      : getUserData1d(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return Center(
@@ -390,12 +443,12 @@ class _InvoicesState extends State<Invoices> {
                         columns: <DataColumn>[
                           DataColumn(label: Text('Invoice No')),
                           DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Lounge')),
                           DataColumn(label: Text('Bartender')),
                           DataColumn(label: Text('Waiter/Waitress')),
                           DataColumn(label: Text('Mode of Payment')),
                           DataColumn(label: Text('POS Ref/Confirmation')),
                           DataColumn(label: Text('Total')),
-                          // DataColumn(label: Text('Orders')),
                         ],
                         rows: isSearchInvoice == 'false'
                             ? <DataRow>[
@@ -439,27 +492,53 @@ class _InvoicesState extends State<Invoices> {
                                                 DataCell(Text(item2)),
                                             ]),
                                   ]
-                                : <DataRow>[
-                                    for (var item in liveData2)
-                                      if (item[1] == dateOfInvoice1)
-                                        DataRow(
-                                            selected:
-                                                selectedData.contains(item),
-                                            onSelectChanged: (isSelected) {
-                                              setState(() {
-                                                final isAdding =
-                                                    isSelected != null &&
-                                                        isSelected;
-                                                isAdding
-                                                    ? selectedData.add(item)
-                                                    : selectedData.remove(item);
-                                              });
-                                            },
-                                            cells: <DataCell>[
-                                              for (var item2 in item.sublist(0))
-                                                DataCell(Text(item2)),
-                                            ]),
-                                  ]),
+                                : isSearchInvoice == 'searchByLounge'
+                                    ? <DataRow>[
+                                        for (var item in liveData2)
+                                          if (item[2] == lounge)
+                                            DataRow(
+                                                selected:
+                                                    selectedData.contains(item),
+                                                onSelectChanged: (isSelected) {
+                                                  setState(() {
+                                                    final isAdding =
+                                                        isSelected != null &&
+                                                            isSelected;
+                                                    isAdding
+                                                        ? selectedData.add(item)
+                                                        : selectedData
+                                                            .remove(item);
+                                                  });
+                                                },
+                                                cells: <DataCell>[
+                                                  for (var item2
+                                                      in item.sublist(0))
+                                                    DataCell(Text(item2)),
+                                                ]),
+                                      ]
+                                    : <DataRow>[
+                                        for (var item in liveData2)
+                                          if (item[1] == dateOfInvoice1)
+                                            DataRow(
+                                                selected:
+                                                    selectedData.contains(item),
+                                                onSelectChanged: (isSelected) {
+                                                  setState(() {
+                                                    final isAdding =
+                                                        isSelected != null &&
+                                                            isSelected;
+                                                    isAdding
+                                                        ? selectedData.add(item)
+                                                        : selectedData
+                                                            .remove(item);
+                                                  });
+                                                },
+                                                cells: <DataCell>[
+                                                  for (var item2
+                                                      in item.sublist(0))
+                                                    DataCell(Text(item2)),
+                                                ]),
+                                      ]),
                   ),
                 ],
               );
