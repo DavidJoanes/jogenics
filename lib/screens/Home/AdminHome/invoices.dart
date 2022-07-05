@@ -19,9 +19,7 @@ class Invoices extends StatefulWidget {
 
 class _InvoicesState extends State<Invoices> {
   final _formKey = GlobalKey<FormState>();
-  final _formKey2 = GlobalKey<FormState>();
   final invoiceNumberController = TextEditingController();
-  final loungeController = TextEditingController();
   final lounges = {'', 'REGULAR', 'VIP'};
   DropdownMenuItem<String> buildLounges(String Lounge) => DropdownMenuItem(
       value: Lounge,
@@ -58,16 +56,16 @@ class _InvoicesState extends State<Invoices> {
 
   changeIsSearchInvoiceToByNumber() {
     setState(() {
-      isSearchCustomers = 'searchByNumber';
+      isSearchInvoice = 'searchByNumber';
     });
   }
 
   changeIsSearchInvoiceToByLounge() {
     setState(() {
-      isSearchCustomers = 'searchByLounge';
+      isSearchInvoice = 'searchByLounge';
     });
   }
-  
+
   changeIsSearchInvoiceTofalse() {
     setState(() {
       isSearchInvoice = 'false';
@@ -101,6 +99,7 @@ class _InvoicesState extends State<Invoices> {
     for (var data in db.InvoicesRecord) {
       liveData.add(data['invoicenumber']);
       liveData.add(data['date']);
+      liveData.add(data['lounge']);
       liveData.add(data['bartender']);
       liveData.add(data['waiter']);
       liveData.add(data['modeofpayment']);
@@ -137,6 +136,7 @@ class _InvoicesState extends State<Invoices> {
 
   @override
   void initState() {
+    lounge = null;
     getUserData1();
     getUserData2();
     convertDateTimeDisplay1(dateOfInvoice.toString());
@@ -147,7 +147,6 @@ class _InvoicesState extends State<Invoices> {
   @override
   void dispose() {
     invoiceNumberController.dispose();
-    loungeController.dispose();
     super.dispose();
   }
 
@@ -290,6 +289,7 @@ class _InvoicesState extends State<Invoices> {
               setState(() {
                 selectedData.clear();
                 invoiceNumberController.text = '';
+                lounge = null;
                 isSearchInvoice = null;
               });
             },
@@ -339,7 +339,7 @@ class _InvoicesState extends State<Invoices> {
                   key: _formKey,
                   child: RoundedInputField3b3(
                       controller: invoiceNumberController,
-                      width: size.width * 0.3,
+                      width: size.width * 0.2,
                       radius: size.width * 0.005,
                       mainText: '',
                       hideText: false,
@@ -351,7 +351,7 @@ class _InvoicesState extends State<Invoices> {
                       })),
               SizedBox(width: size.width * 0.02),
               Container(
-                width: size.width * 0.22,
+                width: size.width * 0.25,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(size.width * 0.005),
                   border: Border.all(color: transparentColor, width: 2),
@@ -362,14 +362,12 @@ class _InvoicesState extends State<Invoices> {
                       Icon(Icons.vertical_shades_sharp, color: primaryColor),
                   title: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      hint: Text('Select lounge'),
+                      hint: Text('Search by lounge'),
                       isExpanded: true,
                       value: lounge,
                       iconSize: 30,
                       items: lounges.map(buildLounges).toList(),
                       onChanged: (value) async => setState(() {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please wait..")));
                         lounge = value;
                         setState(() {
                           isSearchInvoice = 'searchByLounge';
@@ -381,7 +379,7 @@ class _InvoicesState extends State<Invoices> {
               ),
               SizedBox(width: size.width * 0.02),
               Container(
-                width: size.width * 0.3,
+                width: size.width * 0.25,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(size.width * 0.005),
                   border: Border.all(color: transparentColor, width: 2),
@@ -414,9 +412,9 @@ class _InvoicesState extends State<Invoices> {
         child: FutureBuilder(
           future: isSearchInvoice == null
               ? getUserData1()
-              : isSearchCustomers == 'searchByNumber'
+              : isSearchInvoice == 'searchByNumber'
                   ? getUserData1b()
-                  : isSearchCustomers == 'searchByLounge'
+                  : isSearchInvoice == 'searchByLounge'
                       ? getUserData1c()
                       : getUserData1d(),
           builder: (context, snapshot) {
@@ -495,7 +493,7 @@ class _InvoicesState extends State<Invoices> {
                                 : isSearchInvoice == 'searchByLounge'
                                     ? <DataRow>[
                                         for (var item in liveData2)
-                                          if (item[2] == lounge)
+                                          if (item[2] == lounge!.toLowerCase())
                                             DataRow(
                                                 selected:
                                                     selectedData.contains(item),
