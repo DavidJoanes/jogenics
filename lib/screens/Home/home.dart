@@ -103,6 +103,9 @@ class _HomeBodyState extends State<HomeBody> {
                     size: size.width * 0.05,
                   ),
                   onPressed: () async {
+                    setState(() {
+                      isAdmin = true;
+                    });
                     await Navigator.push(
                       context,
                       CustomPageRoute(widget: SignInBodyAdmin()),
@@ -117,6 +120,9 @@ class _HomeBodyState extends State<HomeBody> {
                     size: size.width * 0.05,
                   ),
                   onPressed: () async {
+                    setState(() {
+                      isAdmin = false;
+                    });
                     await Navigator.push(
                       context,
                       CustomPageRoute(widget: SignInBodyUser()),

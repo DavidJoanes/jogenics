@@ -177,9 +177,9 @@ class _InvoicesState extends State<Invoices> {
                       return dialog.ReturnDialog1(
                         title: SizedBox(
                           width: size.width * 0.7,
-                          height: size.height * 0.1,
+                          height: size.height * 0.7,
                           child: FutureBuilder(
-                            future: getUserData1c(),
+                            future: getUserData1d(),
                             builder: (context, snapshot) {
                               if (snapshot.data == null) {
                                 return Center(
@@ -189,38 +189,40 @@ class _InvoicesState extends State<Invoices> {
                                 return Column(
                                   children: [
                                     Expanded(
-                                      child: DataTable2(
-                                          columnSpacing: 5,
-                                          horizontalMargin: 5,
-                                          bottomMargin: 20,
-                                          showBottomBorder: true,
-                                          minWidth: size.width * 0.6,
-                                          dataRowColor:
-                                              MaterialStateColor.resolveWith(
-                                                  (Set<MaterialState> states) =>
-                                                      states.contains(
-                                                              MaterialState
-                                                                  .selected)
-                                                          ? primaryColor
-                                                          : whiteColor),
-                                          showCheckboxColumn: false,
-                                          columns: <DataColumn>[
-                                            DataColumn(
-                                                label: Text('Description')),
-                                            DataColumn(label: Text('Quantity')),
-                                            DataColumn(label: Text('Price')),
-                                          ],
-                                          rows: <DataRow>[
-                                            for (var item in liveData3)
-                                              DataRow(
-                                                  selected: selectedData
-                                                      .contains(item),
-                                                  cells: <DataCell>[
-                                                    for (var item2
-                                                        in item.sublist(0))
-                                                      DataCell(Text(item2)),
-                                                  ]),
-                                          ]),
+                                      child: SingleChildScrollView(
+                                        child: DataTable2(
+                                            columnSpacing: 5,
+                                            horizontalMargin: 5,
+                                            bottomMargin: 20,
+                                            showBottomBorder: true,
+                                            minWidth: size.width * 0.6,
+                                            dataRowColor:
+                                                MaterialStateColor.resolveWith(
+                                                    (Set<MaterialState> states) =>
+                                                        states.contains(
+                                                                MaterialState
+                                                                    .selected)
+                                                            ? primaryColor
+                                                            : whiteColor),
+                                            showCheckboxColumn: false,
+                                            columns: <DataColumn>[
+                                              DataColumn(
+                                                  label: Text('Description')),
+                                              DataColumn(label: Text('Quantity')),
+                                              DataColumn(label: Text('Price')),
+                                            ],
+                                            rows: <DataRow>[
+                                              for (var item in liveData3)
+                                                DataRow(
+                                                    selected: selectedData
+                                                        .contains(item),
+                                                    cells: <DataCell>[
+                                                      for (var item2
+                                                          in item.sublist(0))
+                                                        DataCell(Text(item2)),
+                                                    ]),
+                                            ]),
+                                      ),
                                     ),
                                   ],
                                 );

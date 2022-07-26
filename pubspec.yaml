@@ -59,6 +59,11 @@ dependencies:
   dio: ^4.0.6
   pdf: ^3.8.1
   printing: ^5.9.1
+  dart_vlc: ^0.3.0
+  url_launcher: ^6.1.2
+  # flutter_native_view: ^0.0.2
+  # win32: any
+  # ffi: any
   # theme_provider: ^0.5.0
   # http: ^0.13.0
   # flutter_filereader: ^3.0.0

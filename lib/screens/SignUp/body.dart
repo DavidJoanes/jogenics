@@ -47,6 +47,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     securityAnswerController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    hotel = null;
     super.dispose();
   }
 
@@ -376,12 +377,13 @@ class _RightSideState extends State<RightSide> {
                                           content:
                                               Text("No internet connection!")));
                                 }
-                              }else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          backgroundColor: errorColor,
-                                          content:
-                                              Text("All fields are required!")));}
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        backgroundColor: errorColor,
+                                        content:
+                                            Text("All fields are required!")));
+                              }
                             }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

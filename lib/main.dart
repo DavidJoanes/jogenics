@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, must_be_immutable, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, must_be_immutable, prefer_typing_uninitialized_variables, depend_on_referenced_packages
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/components/logout.dart';
@@ -6,10 +6,12 @@ import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/constants.dart';
 import 'package:JoGenics/restart.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:JoGenics/screens/Home/home.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_view/flutter_native_view.dart';
 import 'package:window_manager/window_manager.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
@@ -19,6 +21,8 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+  await FlutterNativeView.ensureInitialized();
+  await DartVLC.initialize();
   runApp(RestartWidget(child: MyApp(destroyApp: true)));
   doWhenWindowReady(() {
     initialSize = Size(800, 600);

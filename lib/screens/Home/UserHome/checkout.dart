@@ -112,7 +112,7 @@ class _CheckOutState extends State<CheckOut> {
     final DateFormat serverFormater = DateFormat('dd-MM-yyyy');
     final DateTime displayDate = displayFormater.parse(date);
     final String formatted = serverFormater.format(displayDate);
-    final String formatted2 = serverFormater.format(displayDate);
+    // final String formatted2 = serverFormater.format(displayDate);
     dateOfCheckout2 = formatted;
     dateOfCheckout1 = formatted;
     return dateOfCheckout2;

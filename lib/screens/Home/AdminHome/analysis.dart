@@ -577,7 +577,7 @@ class _BuildBottomState extends State<BuildBottom> {
         fontWeight: FontWeight.bold);
     return SizedBox(
       width: size.width * 0.9,
-      height: size.height * 0.8,
+      height: size.height * 0.9,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -612,16 +612,18 @@ class _BuildBottomState extends State<BuildBottom> {
                               if (year != null && year != '') {
                                 if (indexForMonthsOfBestSellers <
                                     monthsOfBestSellers.length - 1) {
-                                  indexForMonthsOfBestSellers != 0
-                                      ? setState(() {
-                                          indexForMonthsOfBestSellers--;
-                                          fetchDrinksSold(
-                                              monthsOfBestSellers[
-                                                  indexForMonthsOfBestSellers],
-                                              year);
-                                          _createSampleData();
-                                        })
-                                      : null;
+                                  if (indexForMonthsOfBestSellers != 0) {
+                                    setState(() {
+                                      indexForMonthsOfBestSellers--;
+                                    });
+                                    setState(() {
+                                      fetchDrinksSold(
+                                          monthsOfBestSellers[
+                                              indexForMonthsOfBestSellers],
+                                          year);
+                                      _createSampleData();
+                                    });
+                                  }
                                 }
                               }
                             }),
@@ -632,16 +634,18 @@ class _BuildBottomState extends State<BuildBottom> {
                               if (year != null && year != '') {
                                 if (indexForMonthsOfBestSellers <
                                     monthsOfBestSellers.length - 1) {
-                                  indexForMonthsOfBestSellers != 11
-                                      ? setState(() {
-                                          indexForMonthsOfBestSellers++;
-                                          fetchDrinksSold(
-                                              monthsOfBestSellers[
-                                                  indexForMonthsOfBestSellers],
-                                              year);
-                                          _createSampleData();
-                                        })
-                                      : null;
+                                  if (indexForMonthsOfBestSellers != 11) {
+                                    setState(() {
+                                      indexForMonthsOfBestSellers++;
+                                    });
+                                    setState(() {
+                                      fetchDrinksSold(
+                                          monthsOfBestSellers[
+                                              indexForMonthsOfBestSellers],
+                                          year);
+                                      _createSampleData();
+                                    });
+                                  }
                                 }
                               }
                             }),
@@ -658,7 +662,9 @@ class _BuildBottomState extends State<BuildBottom> {
               height: size.height * 0.5,
               child: drinks.isNotEmpty
                   ? BuildBarChart2(dataList: _createSampleData())
-                  : Text('NIL', style: TextStyle(fontSize: size.width * 0.02)),
+                  : Center(
+                      child: Text('NIL',
+                          style: TextStyle(fontSize: size.width * 0.02))),
             ),
           ),
           SizedBox(height: size.height * 0.04),
@@ -667,7 +673,7 @@ class _BuildBottomState extends State<BuildBottom> {
             children: [
               Icon(Icons.info, size: size.width * 0.015),
               SizedBox(width: size.width * 0.004),
-              Text('Click on each drink to view total sold for that month.',
+              Text('Click on each product to view total sold for that month.',
                   style: TextStyle(
                       color: navyBlueColor, fontSize: size.width * 0.012)),
             ],
@@ -872,7 +878,7 @@ class _BuildBarChart2State extends State<BuildBarChart2> {
                 model.selectedSeries[0].domainFn(model.selectedDatum[0].index);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: primaryColor2,
-                content: Text("Total bottles of $itemName sold: $totalSold")));
+                content: Text("Total number of $itemName sold: $totalSold")));
           },
         )
       ],
@@ -1033,7 +1039,7 @@ class _BuildRightState extends State<BuildRight> {
     var style = TextStyle(
         fontSize: size.width * 0.01,
         fontFamily: 'Biko',
-        color: Colors.black,
+        color: navyBlueColor,
         fontWeight: FontWeight.bold);
     return SizedBox(
       width: size.width * 0.4,
@@ -1199,7 +1205,6 @@ class _BuildPieChartState extends State<BuildPieChart> {
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
     return AspectRatio(
       aspectRatio: 2.0,
       child: charts.PieChart(widget.data,

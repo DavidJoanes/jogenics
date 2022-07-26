@@ -341,27 +341,27 @@ class _InventoryState extends State<Inventory> {
                       selectedField!.toLowerCase() == 'productname'
                           ? newValueController.text.trim()
                           : selectedData[0][1],
-                      selectedField!.toLowerCase() == 'quantity'
-                          ? newValueController.text.trim()
-                          : selectedData[0][2],
+                      // selectedField!.toLowerCase() == 'quantity'
+                      //     ? newValueController.text.trim()
+                      //     : selectedData[0][2],
                       selectedField!.toLowerCase() == 'costprice'
                           ? newValueController.text.trim()
-                          : selectedData[0][3],
+                          : selectedData[0][2],
                       selectedField!.toLowerCase() == 'mrp'
                           ? newValueController.text.trim()
-                          : selectedData[0][4],
+                          : selectedData[0][3],
                       selectedField!.toLowerCase() == 'lounge'
                           ? newValueController.text.trim()
-                          : selectedData[0][5],
+                          : selectedData[0][4],
                       selectedField!.toLowerCase() == 'category'
                           ? newValueController.text.trim()
-                          : selectedData[0][6],
+                          : selectedData[0][5],
                       selectedField!.toLowerCase() == 'subcategory'
                           ? newValueController.text.trim()
-                          : selectedData[0][7],
+                          : selectedData[0][6],
                       selectedField!.toLowerCase() == 'vendorphone'
                           ? newValueController.text.trim()
-                          : selectedData[0][8]) ==
+                          : selectedData[0][7]) ==
                   true) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: primaryColor2,

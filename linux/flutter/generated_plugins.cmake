@@ -4,8 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   bitsdojo_window_linux
+  dart_vlc
   printing
   screen_retriever
+  url_launcher_linux
   window_manager
 )
 

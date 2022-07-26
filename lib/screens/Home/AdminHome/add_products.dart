@@ -25,7 +25,7 @@ class _AddProductState extends State<AddProduct> {
   final random = Random();
   final _formKey = GlobalKey<FormState>();
   final productNameController = TextEditingController();
-  final quantityController = TextEditingController();
+  // final quantityController = TextEditingController();
   final costPriceController = TextEditingController();
   final mrpController = TextEditingController();
   final phoneController = TextEditingController();
@@ -132,7 +132,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   void dispose() {
     productNameController.dispose();
-    quantityController.dispose();
+    // quantityController.dispose();
     costPriceController.dispose();
     mrpController.dispose();
     phoneController.dispose();
@@ -375,7 +375,7 @@ class _AddProductState extends State<AddProduct> {
                                     if (await db.addProduct(
                                             productID,
                                             productNameController.text.trim(),
-                                            quantityController.text.trim(),
+                                            // quantityController.text.trim(),
                                             costPriceController.text.trim(),
                                             mrpController.text.trim(),
                                             lounge,

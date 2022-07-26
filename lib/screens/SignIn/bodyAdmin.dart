@@ -12,6 +12,7 @@ import 'package:JoGenics/constants.dart';
 import 'package:JoGenics/main.dart';
 import 'package:JoGenics/screens/ForgotPassword/reset_password.dart';
 import 'package:JoGenics/screens/Home/AdminHome/body.dart';
+import 'package:JoGenics/screens/Tutorial/tutorial.dart';
 import 'package:flutter/material.dart';
 
 class SignInBodyAdmin extends StatefulWidget {
@@ -69,18 +70,34 @@ class LeftSide extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
         width: size.width * 0.4,
-        child: Column(
-          children: [
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage('assets/images/loginBody.png'),
-                fit: BoxFit.fill,
+        child: Stack(children: [
+          Column(
+            children: [
+              Expanded(
+                  child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage('assets/images/loginBody.png'),
+                  fit: BoxFit.fill,
+                )),
               )),
-            ))
-          ],
-        ));
+            ],
+          ),
+          Positioned(
+            bottom: size.height * 0.02,
+            right: size.width * 0.01,
+            child: IconButton(
+              icon: Icon(Icons.play_circle_rounded,
+                  size: size.width * 0.03, color: transparentColor),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CustomPageRoute(widget: Tutorial()),
+                );
+              },
+            ),
+          ),
+        ]));
   }
 }
 
@@ -121,8 +138,8 @@ class _RightSideState extends State<RightSide> {
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
                   child: Column(

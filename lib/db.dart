@@ -71,12 +71,11 @@ late int PresidentialRoomRate = 0;
 late int CustomerDatabaseSize = 100;
 late bool SubscriptionCheck = true;
 late String SubscriptionPackage = '';
-late String SubscriptionDate = '11-06-2022';
-late String SubscriptionExpiryDate = '11-07-2022';
+late String SubscriptionDate = '';
+late String SubscriptionExpiryDate = '';
 late String SubscriptionType = '';
 late int AuthorizationCodeForOwner = 0;
 late int AuthorizationCodeForManager = 0;
-late int SubscriptionDaysLeft = constants.fetchSubscriptionDaysLeft();
 
 // Administrators section
 late var Administrators = [];
@@ -133,7 +132,7 @@ fetchHotelDetails() {
       SubscriptionCheck = hotelData['subscriptioncheck'];
       SubscriptionPackage = hotelData['subscriptionpackage'];
       SubscriptionDate = hotelData['subscriptiondate'];
-      SubscriptionExpiryDate = hotelData['subscriptiondate'];
+      SubscriptionExpiryDate = hotelData['subscriptionexpirydate'];
       SubscriptionType = hotelData['subscriptiontype'];
       AuthorizationCodeForOwner = hotelData['authorizationowner'];
       AuthorizationCodeForManager = hotelData['authorizationmanager'];
@@ -737,11 +736,11 @@ updateEmployee(
 }
 
 // Inventory tab
-addProduct(productid, productname, quantity, costprice, mrp, lounge, category,
+addProduct(productid, productname, costprice, mrp, lounge, category,
     subcategory, vendorphone) async {
   productid = productid.toLowerCase();
   productname = productname.toLowerCase();
-  quantity = quantity.toLowerCase();
+  // quantity = quantity.toLowerCase();
   costprice = costprice.toLowerCase();
   mrp = mrp.toLowerCase();
   lounge = lounge.toLowerCase();
@@ -759,7 +758,7 @@ addProduct(productid, productname, quantity, costprice, mrp, lounge, category,
       final insert = await dbClient.insert(<String, dynamic>{
         'productid': productid,
         'productname': productname,
-        'quantity': quantity,
+        // 'quantity': quantity,
         'costprice': costprice,
         'mrp': mrp,
         'lounge': lounge,
@@ -777,11 +776,11 @@ addProduct(productid, productname, quantity, costprice, mrp, lounge, category,
   }
 }
 
-updateProduct(productid, productname, quantity, costprice, mrp, lounge,
-    category, subcategory, vendorphone) async {
+updateProduct(productid, productname, costprice, mrp, lounge, category,
+    subcategory, vendorphone) async {
   // productid = productid.toLowerCase();
   productname = productname.toLowerCase();
-  quantity = quantity.toLowerCase();
+  // quantity = quantity.toLowerCase();
   costprice = costprice.toLowerCase();
   mrp = mrp.toLowerCase();
   lounge = lounge.toLowerCase();
@@ -801,7 +800,7 @@ updateProduct(productid, productname, quantity, costprice, mrp, lounge,
       }, {
         'productid': productid,
         'productname': productname,
-        'quantity': quantity,
+        // 'quantity': quantity,
         'costprice': costprice,
         'mrp': mrp,
         'lounge': lounge,
@@ -890,7 +889,6 @@ deleteProduct(productid) async {
   }
 }
 
-
 // Invoices Tab
 fetchInvoicesRecord() async {
   final db = await Db.create(db_url);
@@ -907,7 +905,6 @@ fetchInvoicesRecord() async {
     return 'No internet';
   }
 }
-
 
 // Sales Tab
 updateProductQuantity(productid, productname, quantity, costprice, mrp, lounge,

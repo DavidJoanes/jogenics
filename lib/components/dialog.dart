@@ -15,9 +15,9 @@ final mailtoLinkError = Mailto(
 );
 final mailtoLinkPayment = Mailto(
   to: [db.CompanyEmailAddress],
-  subject: 'Subscription Package Purchased',
+  subject: "Subscription Package Purchased",
   body:
-      "Greetings,\n\nI wish to state that I have just purchased the {package name} subscription package.\nPlease, find attached a proof of payment as I duly await your confirmation.\n\nHotel Name:  ${db.HotelName.toTitleCase()}\nHotel's Email Address:  ${db.HotelEmailAddress}\n ",
+      "Greetings,\n\nI wish to state that I have just purchased the {package name} subscription package for {number of months}.\nPlease, find attached a proof of payment as I duly await your confirmation.\n\nHotel Name:  ${db.HotelName.toTitleCase()}\nHotel's Email Address:  ${db.HotelEmailAddress}\n ",
 );
 
 Future<void> launchInBrowser(String url) async {

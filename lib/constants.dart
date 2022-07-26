@@ -16,7 +16,8 @@ const navyBlueColor = Color.fromARGB(255, 26, 34, 46);
 const transparentColor = Colors.transparent;
 const transparentColor2 = Color.fromARGB(77, 0, 0, 0);
 const customBackgroundColor = Color.fromARGB(255, 242, 242, 242);
-const double currentV = 1.2;
+const double currentV = 1.1;
+bool? isAdmin;
 String? hotel;
 String? gender;
 String? lounge;
@@ -49,6 +50,7 @@ String? isSearchCustomers;
 bool? calculateClicked;
 bool? isSearchForUpdate;
 bool? isSearchForDelete;
+String? tutorialQuestion;
 
 fetchTodaysDate() {
   DateTime today = DateTime.now();
@@ -70,8 +72,41 @@ fetchNextMonthDate() {
 }
 
 fetchSubscriptionDaysLeft() {
-  var today = fetchTodaysDate().split('-')[0];
-  var subDate = db.SubscriptionDate.split('-')[0];
-  var daysleft = (int.parse(subDate)) - int.parse(today);
-  return daysleft;
+  final int daysLeft;
+  var today = int.parse(fetchTodaysDate().split('-')[0]);
+  var subDateDay = int.parse(db.SubscriptionDate.split('-')[0]);
+  var subDateMonth = int.parse(db.SubscriptionDate.split('-')[1]);
+  // var subDateYear = int.parse(db.SubscriptionDate.split('-')[2]);
+  var subExpiryDateDay = int.parse(db.SubscriptionExpiryDate.split('-')[0]);
+  var subExpiryDateMonth = int.parse(db.SubscriptionExpiryDate.split('-')[1]);
+  // var subExpiryDateYear = int.parse(db.SubscriptionExpiryDate.split('-')[2]);
+  if (subExpiryDateMonth - subDateMonth == 1) {
+    daysLeft = subExpiryDateDay - today;
+  } else if (subExpiryDateMonth - subDateMonth == 2) {
+    daysLeft = (subExpiryDateDay + 30) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 3) {
+    daysLeft = (subExpiryDateDay + 60) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 4) {
+    daysLeft = (subExpiryDateDay + 90) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 5) {
+    daysLeft = (subExpiryDateDay + 120) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 6) {
+    daysLeft = (subExpiryDateDay + 150) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 7) {
+    daysLeft = (subExpiryDateDay + 180) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 8) {
+    daysLeft = (subExpiryDateDay + 210) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 9) {
+    daysLeft = (subExpiryDateDay + 240) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 10) {
+    daysLeft = (subExpiryDateDay + 270) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 11) {
+    daysLeft = (subExpiryDateDay + 300) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 12) {
+    daysLeft = (subExpiryDateDay + 330) - today;
+  } else {
+    daysLeft = subExpiryDateDay - subDateDay;
+  }
+  // var daysleft = (int.parse(subDate)) - int.parse(today);
+  return daysLeft;
 }

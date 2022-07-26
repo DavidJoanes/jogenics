@@ -32,12 +32,13 @@ class _SubscriptionState extends State<Subscription> {
 
   @override
   void initState() {
-    super.initState();
+    fetchSubscriptionDaysLeft();
     setState(() {
-      db.SubscriptionDaysLeft < 1
+      fetchSubscriptionDaysLeft() < 1
           ? db.SubscriptionCheck = false
           : db.SubscriptionCheck = true;
     });
+    super.initState();
   }
 
   @override
@@ -69,11 +70,11 @@ class _SubscriptionState extends State<Subscription> {
     var style = TextStyle(
       fontSize: size.width * 0.01,
       fontWeight: FontWeight.w800,
-      color: navyBlueColor,
+      color: db.SubscriptionCheck ? navyBlueColor : errorColor,
     );
     return Column(
       children: [
-        SizedBox(height: size.height * 0.15),
+        SizedBox(height: size.height * 0.1),
         Center(
           child: Image.asset('assets/icons/JOGENICS.png', scale: 0.8),
         ),
@@ -90,9 +91,9 @@ class _SubscriptionState extends State<Subscription> {
             children: [
               Text(
                 db.SubscriptionCheck == true
-                    ? db.SubscriptionDaysLeft < 2
-                        ? 'You have ${db.SubscriptionDaysLeft} day left on your current plan.'
-                        : 'You have ${db.SubscriptionDaysLeft} days left on your current plan.'
+                    ? fetchSubscriptionDaysLeft() < 2
+                        ? 'You have ${fetchSubscriptionDaysLeft()} day left on your current plan.'
+                        : 'You have ${fetchSubscriptionDaysLeft()} days left on your current plan.'
                     : 'You currently do not have an active subscription.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
@@ -102,7 +103,26 @@ class _SubscriptionState extends State<Subscription> {
             ],
           ),
         ),
-        SizedBox(height: size.height * 0.1),
+        SizedBox(height: size.height * 0.05),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: size.width * 0.015),
+              SizedBox(width: size.width * 0.01),
+              Wrap(crossAxisAlignment: WrapCrossAlignment.start, children: [
+                Text(
+                    "You can subscribe for more than a month by using the manual transfer method and paying in the\nequivalent amount, and simply stating how many months you paid for in the mail you send to us.\nPlease Note: We offer 15% discount on 6+ months subscription.",
+                    style: GoogleFonts.poppins(
+                        textStyle: TextStyle(
+                            color: navyBlueColor,
+                            fontSize: size.width * 0.01))),
+              ]),
+            ],
+          ),
+        ),
+        SizedBox(height: size.height * 0.05),
         Center(
           child: Text(
             "Subscription packages",
@@ -355,7 +375,8 @@ class _SubscriptionState extends State<Subscription> {
                                               builder: (context) {
                                                 return dialog.ReturnDialog1(
                                                   title: Text('Coming soon!'),
-                                                  message: 'This payment method is currently under maintenance. Please, use the Transfer method and follow the instructions carefully. We apologize for any inconvinience this may cause you.',
+                                                  message:
+                                                      'This payment method is currently under maintenance. Please, use the Transfer method and follow the instructions carefully. We apologize for any inconvinience this may cause you.',
                                                   color: navyBlueColor,
                                                   buttonText: 'Ok',
                                                   onPressed: () {
