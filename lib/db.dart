@@ -24,7 +24,7 @@ late bool registeredJoGenics = false;
 late String AccountName = "David Joanes Kemdirim";
 late String AccountNumber = "0164970385";
 late String Bank = "Guaranty Trust Bank";
-late String LatestAppVersion = '';
+late double LatestAppVersion = 0.0;
 late String LatestAppVersionDescription = '';
 
 // SignUp, SignIn and Subscription section
@@ -116,8 +116,10 @@ fetchHotelDetails() {
       AccountName = hotelData['accountname'];
       AccountNumber = hotelData['accountnumber'];
       Bank = hotelData['bank'];
-      HotelCollectionName = hotelData['hotelcollectionname'];
+      AuthorizationCodeForOwner = hotelData['authorizationowner'];
+      AuthorizationCodeForManager = hotelData['authorizationmanager'];
       HotelName = hotelData['hotelname'];
+      HotelCollectionName = hotelData['hotelcollectionname'];
       HotelEmailAddress = hotelData['hotelemail'];
       HotelPhone = hotelData['hotelphone'];
       HotelAddress = hotelData['hoteladdress'];
@@ -134,9 +136,60 @@ fetchHotelDetails() {
       SubscriptionDate = hotelData['subscriptiondate'];
       SubscriptionExpiryDate = hotelData['subscriptionexpirydate'];
       SubscriptionType = hotelData['subscriptiontype'];
-      AuthorizationCodeForOwner = hotelData['authorizationowner'];
-      AuthorizationCodeForManager = hotelData['authorizationmanager'];
+      LatestAppVersion = hotelData['appversion'];
     }
+  }
+}
+
+configureSubscription(
+    subscriptionPackage, subscriptionDate, subscriptionExpiryDate) async {
+  subscriptionPackage = subscriptionPackage.toLowerCase();
+  final db = await Db.create(db_url);
+  await db.open();
+  final dbClient = db.collection(db_collection_main);
+  final check = await dbClient.find({'hotelname': HotelName}).toList();
+
+  try {
+    if (check.isNotEmpty) {
+      print('found');
+      final insert = await dbClient.update({
+        'hotelname': HotelName
+      }, {
+        'registered': registeredJoGenics,
+        'accountname': AccountName,
+        'accountnumber': AccountNumber,
+        'bank': Bank,
+        'authorizationowner': AuthorizationCodeForOwner,
+        'authorizationmanager': AuthorizationCodeForManager,
+        'hotelname': HotelName,
+        'hotelcollectionname': HotelCollectionName,
+        'hotelemail': HotelEmailAddress,
+        'hotelphone': HotelPhone,
+        'hoteladdress': HotelAddress,
+        'hotelprovince': HotelProvince,
+        'hotelcountry': HotelCountry,
+        'hotelcurrency': HotelCurrency,
+        'standardroomrate': StandardRoomRate,
+        'executiveroomrate': ExecutiveRoomRate,
+        'presidentialroomrate': PresidentialRoomRate,
+        'basicpackageprice': BasicPackagePrice,
+        'standardpackageprice': StandardPackagePrice,
+        'subscriptioncheck': true,
+        'subscriptionpackage': subscriptionPackage,
+        'subscriptiondate': subscriptionDate,
+        'subscriptionexpirydate': subscriptionExpiryDate,
+        'subscriptiontype': SubscriptionType,
+        'appversion': LatestAppVersion,
+      });
+      await fetchHotelData();
+      print('updated');
+      return true;
+    } else {
+      print('empty');
+      return false;
+    }
+  } on Exception catch (error) {
+    return 'No internet connection';
   }
 }
 
@@ -512,6 +565,7 @@ updateHotelData(
         'subscriptiondate': SubscriptionDate,
         'subscriptionexpirydate': SubscriptionExpiryDate,
         'subscriptiontype': SubscriptionType,
+        'appversion': LatestAppVersion,
       });
       await fetchHotelData();
       print('updated');

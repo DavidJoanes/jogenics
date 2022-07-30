@@ -147,6 +147,9 @@ class _InvoicesState extends State<Invoices> {
   @override
   void dispose() {
     invoiceNumberController.dispose();
+    liveData.clear();
+    liveData2.clear();
+    liveData3.clear();
     super.dispose();
   }
 
@@ -198,7 +201,8 @@ class _InvoicesState extends State<Invoices> {
                                             minWidth: size.width * 0.6,
                                             dataRowColor:
                                                 MaterialStateColor.resolveWith(
-                                                    (Set<MaterialState> states) =>
+                                                    (Set<MaterialState>
+                                                            states) =>
                                                         states.contains(
                                                                 MaterialState
                                                                     .selected)
@@ -208,7 +212,8 @@ class _InvoicesState extends State<Invoices> {
                                             columns: <DataColumn>[
                                               DataColumn(
                                                   label: Text('Description')),
-                                              DataColumn(label: Text('Quantity')),
+                                              DataColumn(
+                                                  label: Text('Quantity')),
                                               DataColumn(label: Text('Price')),
                                             ],
                                             rows: <DataRow>[

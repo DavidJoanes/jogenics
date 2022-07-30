@@ -80,29 +80,29 @@ fetchSubscriptionDaysLeft() {
   var subExpiryDateMonth = int.parse(db.SubscriptionExpiryDate.split('-')[1]);
   // var subExpiryDateYear = int.parse(db.SubscriptionExpiryDate.split('-')[2]);
   if (subExpiryDateMonth - subDateMonth == 1) {
-    daysLeft = subExpiryDateDay - today;
+    daysLeft = subExpiryDateDay+30 - today;
   } else if (subExpiryDateMonth - subDateMonth == 2) {
-    daysLeft = (subExpiryDateDay + 30) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 3) {
     daysLeft = (subExpiryDateDay + 60) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 4) {
+  } else if (subExpiryDateMonth - subDateMonth == 3) {
     daysLeft = (subExpiryDateDay + 90) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 5) {
+  } else if (subExpiryDateMonth - subDateMonth == 4) {
     daysLeft = (subExpiryDateDay + 120) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 6) {
+  } else if (subExpiryDateMonth - subDateMonth == 5) {
     daysLeft = (subExpiryDateDay + 150) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 7) {
+  } else if (subExpiryDateMonth - subDateMonth == 6) {
     daysLeft = (subExpiryDateDay + 180) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 8) {
+  } else if (subExpiryDateMonth - subDateMonth == 7) {
     daysLeft = (subExpiryDateDay + 210) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 9) {
+  } else if (subExpiryDateMonth - subDateMonth == 8) {
     daysLeft = (subExpiryDateDay + 240) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 10) {
+  } else if (subExpiryDateMonth - subDateMonth == 9) {
     daysLeft = (subExpiryDateDay + 270) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 11) {
+  } else if (subExpiryDateMonth - subDateMonth == 10) {
     daysLeft = (subExpiryDateDay + 300) - today;
-  } else if (subExpiryDateMonth - subDateMonth == 12) {
+  } else if (subExpiryDateMonth - subDateMonth == 11) {
     daysLeft = (subExpiryDateDay + 330) - today;
+  } else if (subExpiryDateMonth - subDateMonth == 12) {
+    daysLeft = (subExpiryDateDay + 360) - today;
   } else {
     daysLeft = subExpiryDateDay - subDateDay;
   }

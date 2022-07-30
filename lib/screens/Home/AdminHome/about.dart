@@ -23,7 +23,7 @@ class _AboutState extends State<About> {
 
   Future<void> checkForUpdate() async {
     await db.fetchHotelData();
-    if (double.parse(db.LatestAppVersion) > currentV) {
+    if (db.LatestAppVersion > currentV) {
       showDialog(
           // barrierDismissible: false,
           context: context,

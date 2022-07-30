@@ -2,6 +2,7 @@
 import 'package:JoGenics/components/dialog.dart' as dialog;
 import 'package:JoGenics/components/rounded_button.dart';
 import 'package:JoGenics/components/rounded_input_field.dart';
+import 'package:JoGenics/components/title_case.dart';
 import 'package:JoGenics/db.dart' as db;
 import 'package:JoGenics/components/app_bar.dart';
 import 'package:JoGenics/constants.dart';
@@ -11,6 +12,7 @@ import 'package:JoGenics/screens/Home/AdminHome/FlutterwavePayment/verify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwave/flutterwave.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 // import 'package:paystack_flutter/paystack_flutter.dart';
 
 class Subscription extends StatefulWidget {
@@ -29,9 +31,27 @@ class _SubscriptionState extends State<Subscription> {
   final emailController = TextEditingController();
   bool useExistingData = false;
   ValueNotifier checkBox = ValueNotifier(usePrefilledData);
+  late DateTime currentDate = DateTime.now();
+  late String currentDate2 = '';
+  late String subExpiryDate = '';
+
+  String convertDateTimeDisplay(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('dd-MM-yyyy');
+    final DateTime displayDate = displayFormater.parse(date);
+    final String formatted = serverFormater.format(displayDate);
+    currentDate2 = formatted;
+    DateTime today = DateTime.now();
+    DateTime nextMonth = DateTime(today.year, today.month + 1, today.day);
+    final DateTime displayDate2 = displayFormater.parse(nextMonth.toString());
+    final String formatted2 = serverFormater.format(displayDate2);
+    subExpiryDate = formatted2;
+    return currentDate2;
+  }
 
   @override
   void initState() {
+    convertDateTimeDisplay(DateTime.now().toString());
     fetchSubscriptionDaysLeft();
     setState(() {
       fetchSubscriptionDaysLeft() < 1
@@ -47,6 +67,7 @@ class _SubscriptionState extends State<Subscription> {
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    checkBox.dispose();
     super.dispose();
   }
 
@@ -195,126 +216,148 @@ class _SubscriptionState extends State<Subscription> {
                                     text: 'Flutterwave',
                                     color: primaryColor,
                                     onPressed: () {
-                                      db.registeredJoGenics
+                                      fetchSubscriptionDaysLeft() > 1
                                           ? showDialog(
                                               barrierDismissible: false,
                                               context: context,
                                               builder: (context) {
-                                                return dialog.ReturnDialog3(
-                                                    title: Form(
-                                                      key: _formKey,
-                                                      child: Column(
-                                                        children: [
-                                                          RoundedInputField3c(
-                                                              controller:
-                                                                  firstNameController,
-                                                              mainText: '',
-                                                              hintText:
-                                                                  "First name",
-                                                              icon:
-                                                                  Icons.person,
-                                                              onChanged:
-                                                                  (value) {
-                                                                value =
-                                                                    firstNameController
+                                                return dialog.ReturnDialog1(
+                                                  title: Text('Error!'),
+                                                  message:
+                                                      "Dear ${db.CurrentLoggedInUserLastname.toTitleCase()}, your current subscription package is still active, please try the 'Transfer' option instead.",
+                                                  color: errorColor,
+                                                  buttonText: 'Ok',
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                );
+                                              })
+                                          : db.registeredJoGenics
+                                              ? showDialog(
+                                                  barrierDismissible: false,
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return dialog.ReturnDialog4(
+                                                        title: Form(
+                                                          key: _formKey,
+                                                          child: Column(
+                                                            children: [
+                                                              RoundedInputField3c(
+                                                                  controller:
+                                                                      firstNameController,
+                                                                  mainText: '',
+                                                                  hintText:
+                                                                      "First name",
+                                                                  icon: Icons
+                                                                      .person,
+                                                                  onChanged:
+                                                                      (value) {
+                                                                    value = firstNameController
                                                                         .text
                                                                         .trim();
-                                                              }),
-                                                          SizedBox(
-                                                              height:
-                                                                  size.height *
-                                                                      0.01),
-                                                          RoundedInputField3c(
-                                                              controller:
-                                                                  lastNameController,
-                                                              mainText: '',
-                                                              hintText:
-                                                                  "Last name",
-                                                              icon:
-                                                                  Icons.person,
-                                                              onChanged:
-                                                                  (value) {
-                                                                value =
-                                                                    lastNameController
+                                                                  }),
+                                                              SizedBox(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.01),
+                                                              RoundedInputField3c(
+                                                                  controller:
+                                                                      lastNameController,
+                                                                  mainText: '',
+                                                                  hintText:
+                                                                      "Last name",
+                                                                  icon: Icons
+                                                                      .person,
+                                                                  onChanged:
+                                                                      (value) {
+                                                                    value = lastNameController
                                                                         .text
                                                                         .trim();
-                                                              }),
-                                                          SizedBox(
-                                                              height:
-                                                                  size.height *
-                                                                      0.01),
-                                                          RoundedInputField3b(
-                                                            width: size.width *
-                                                                0.4,
-                                                            radius: 20,
-                                                            controller:
-                                                                phoneController,
-                                                            hideText: false,
-                                                            mainText: '',
-                                                            hintText:
-                                                                "Phone number",
-                                                            warningText:
-                                                                'Enter a valid phone number!',
-                                                            icon: Icons.numbers,
-                                                            onChanged: (value) {
-                                                              value =
-                                                                  phoneController
-                                                                      .text
-                                                                      .trim();
-                                                            },
+                                                                  }),
+                                                              SizedBox(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.01),
+                                                              RoundedInputField3b(
+                                                                width:
+                                                                    size.width *
+                                                                        0.4,
+                                                                radius: 20,
+                                                                controller:
+                                                                    phoneController,
+                                                                hideText: false,
+                                                                mainText: '',
+                                                                hintText:
+                                                                    "Phone number",
+                                                                warningText:
+                                                                    'Enter a valid phone number!',
+                                                                icon: Icons
+                                                                    .numbers,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  value =
+                                                                      phoneController
+                                                                          .text
+                                                                          .trim();
+                                                                },
+                                                              ),
+                                                              SizedBox(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.01),
+                                                              RoundedInputFieldEmail(
+                                                                  controller:
+                                                                      emailController,
+                                                                  hintText:
+                                                                      'Email address'),
+                                                              SizedBox(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.01),
+                                                              ValueListenableBuilder(
+                                                                  valueListenable:
+                                                                      checkBox,
+                                                                  builder:
+                                                                      (context,
+                                                                          value,
+                                                                          child) {
+                                                                    return CheckboxListTile(
+                                                                        title: Text(
+                                                                            'Use existing hotel details?'),
+                                                                        value: checkBox
+                                                                            .value,
+                                                                        onChanged:
+                                                                            (newValue) {
+                                                                          // newValue = true;
+                                                                          setState(
+                                                                              () {
+                                                                            // useExistingData =
+                                                                            //     !useExistingData;
+                                                                            checkBox.value =
+                                                                                newValue;
+                                                                          });
+                                                                        });
+                                                                  })
+                                                            ],
                                                           ),
-                                                          SizedBox(
-                                                              height:
-                                                                  size.height *
-                                                                      0.01),
-                                                          RoundedInputFieldEmail(
-                                                              controller:
-                                                                  emailController,
-                                                              hintText:
-                                                                  'Email address'),
-                                                          SizedBox(
-                                                              height:
-                                                                  size.height *
-                                                                      0.01),
-                                                          ValueListenableBuilder(
-                                                              valueListenable:
-                                                                  checkBox,
-                                                              builder: (context,
-                                                                  value,
-                                                                  child) {
-                                                                return CheckboxListTile(
-                                                                    title: Text(
-                                                                        'Use existing hotel details?'),
-                                                                    value: checkBox
-                                                                        .value,
-                                                                    onChanged:
-                                                                        (newValue) {
-                                                                      // newValue = true;
-                                                                      setState(
-                                                                          () {
-                                                                        // useExistingData =
-                                                                        //     !useExistingData;
-                                                                        checkBox.value =
-                                                                            newValue;
-                                                                      });
-                                                                    });
-                                                              })
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    message: '',
-                                                    color: navyBlueColor,
-                                                    buttonText1: 'Cancel',
-                                                    onPressed1: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    buttonText2: 'Pay',
-                                                    onPressed2: () async {
-                                                      final form = _formKey
-                                                          .currentState!;
-                                                      if (checkBox.value) {
-                                                        MakePayment(
+                                                        ),
+                                                        message: '',
+                                                        color: navyBlueColor,
+                                                        button1Text: 'Cancel',
+                                                        onPressed1: () {
+                                                          setState(() {
+                                                            checkBox.value =
+                                                                false;
+                                                          });
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        button2Text: 'Pay',
+                                                        onPressed2: () async {
+                                                          final form = _formKey
+                                                              .currentState!;
+                                                          if (checkBox.value) {
+                                                            MakePayment(
                                                                 context:
                                                                     context,
                                                                 currency:
@@ -335,11 +378,21 @@ class _SubscriptionState extends State<Subscription> {
                                                                         .FLUTTERWAVE_ENCRYPTION_KEY,
                                                                 publickey:
                                                                     ConstantKey
-                                                                        .FLUTTERWAVE_PUBLIC_KEY)
-                                                            .makeFlutterwavePayment();
-                                                      } else {
-                                                        if (form.validate()) {
-                                                          MakePayment(
+                                                                        .FLUTTERWAVE_PUBLIC_KEY,
+                                                                function:
+                                                                    () async {
+                                                                  await db.configureSubscription(
+                                                                      packages[
+                                                                              index]
+                                                                          [
+                                                                          'name'],
+                                                                      currentDate2,
+                                                                      subExpiryDate);
+                                                                }).makeFlutterwavePayment();
+                                                          } else {
+                                                            if (form
+                                                                .validate()) {
+                                                              MakePayment(
                                                                   context:
                                                                       context,
                                                                   currency:
@@ -361,29 +414,39 @@ class _SubscriptionState extends State<Subscription> {
                                                                           .FLUTTERWAVE_ENCRYPTION_KEY,
                                                                   publickey:
                                                                       ConstantKey
-                                                                          .FLUTTERWAVE_PUBLIC_KEY)
-                                                              .makeFlutterwavePayment();
+                                                                          .FLUTTERWAVE_PUBLIC_KEY,
+                                                                  function:
+                                                                      () async {
+                                                                    await db.configureSubscription(
+                                                                        packages[index]
+                                                                            [
+                                                                            'name'],
+                                                                        currentDate2,
+                                                                        subExpiryDate);
+                                                                  }).makeFlutterwavePayment();
+                                                            }
+                                                          }
                                                         }
-                                                      }
-                                                    }
-                                                    // },
+                                                        // },
+                                                        );
+                                                  })
+                                              : showDialog(
+                                                  barrierDismissible: false,
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return dialog.ReturnDialog1(
+                                                      title:
+                                                          Text('Coming soon!'),
+                                                      message:
+                                                          'This payment method is currently under maintenance. Please, use the Transfer method and follow the instructions carefully. We apologize for any inconvinience this may cause you.',
+                                                      color: navyBlueColor,
+                                                      buttonText: 'Ok',
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
                                                     );
-                                              })
-                                          : showDialog(
-                                              barrierDismissible: false,
-                                              context: context,
-                                              builder: (context) {
-                                                return dialog.ReturnDialog1(
-                                                  title: Text('Coming soon!'),
-                                                  message:
-                                                      'This payment method is currently under maintenance. Please, use the Transfer method and follow the instructions carefully. We apologize for any inconvinience this may cause you.',
-                                                  color: navyBlueColor,
-                                                  buttonText: 'Ok',
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                );
-                                              });
+                                                  });
                                     },
                                   ),
                                 ]),

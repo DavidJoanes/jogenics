@@ -13,7 +13,8 @@ class MakePayment {
       required this.emailaddress,
       required this.amount,
       required this.encryptionkey,
-      required this.publickey});
+      required this.publickey,
+      required this.function});
   final BuildContext context;
   final currency;
   final String fullname;
@@ -22,6 +23,7 @@ class MakePayment {
   final String amount;
   final String encryptionkey;
   final String publickey;
+  late Function function;
 
   makeFlutterwavePayment() async {
     try {
@@ -42,8 +44,28 @@ class MakePayment {
       );
 
       final response = await flutterwave.initializeForUiPayments();
-      if (response.message == null) {
-        print('Transaction Failed!');
+      if (response.message == "Transaction fetched successfully") {
+        await function();
+        print(response.data);
+        print(response.message);
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) {
+              return dialog.ReturnDialog1(
+                title: Text('Success'),
+                message: 'Transaction successful..\nPlease restart the application for changes to take effect completely.',
+                buttonText: 'Okay',
+                color: primaryColor,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              );
+            });
+      } else {
+        print(response.message);
         showDialog(
             barrierDismissible: false,
             context: context,
@@ -58,43 +80,6 @@ class MakePayment {
                 },
               );
             });
-      } else {
-        if (response.message == "Transaction fetched successfully") {
-          print(response.data);
-          print(response.message);
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (context) {
-                return dialog.ReturnDialog1(
-                  title: Text('Success'),
-                  message: 'Transaction successful..',
-                  buttonText: 'Okay',
-                  color: primaryColor,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                );
-              });
-        } else {
-          print(response.message);
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (context) {
-                return dialog.ReturnDialog1(
-                  title: Text('Error'),
-                  message: 'Transaction failed!',
-                  buttonText: 'Retry',
-                  color: errorColor,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                );
-              });
-        }
       }
     } catch (error) {
       print(error.toString());

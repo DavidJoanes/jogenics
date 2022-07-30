@@ -488,6 +488,12 @@ class _CustomerRecordsState extends State<CustomerRecords> {
     lastNameController.dispose();
     employeeFullNameController.dispose();
     passwordController.dispose();
+    liveData.clear();
+    liveData2.clear();
+    liveData3.clear();
+    liveData4.clear();
+    liveData5.clear();
+    liveData6.clear();
     super.dispose();
   }
 
@@ -619,8 +625,6 @@ class _CustomerRecordsState extends State<CustomerRecords> {
             child: Icon(Icons.refresh_rounded),
             label: 'Refresh (Customers record)',
             onTap: () async {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text("Please wait..")));
               setState(() {
                 lastNameController.text = '';
                 isSearchCustomers = null;
@@ -736,9 +740,9 @@ class _CustomerRecordsState extends State<CustomerRecords> {
               ? getUserData1()
               : isSearchCustomers == 'searchByDate'
                   ? getUserData1b()
-              : isSearchCustomers == 'searchByDate2'
-                  ? getUserData1c()
-                  : getUserData1c(),
+                  : isSearchCustomers == 'searchByDate2'
+                      ? getUserData1c()
+                      : getUserData1c(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return Center(
@@ -824,49 +828,53 @@ class _CustomerRecordsState extends State<CustomerRecords> {
                                             ]),
                                   ]
                                 : isSearchCustomers == 'searchByDate2'
-                                ? <DataRow>[
-                                    for (var item in liveData2)
-                                      if (item[11] == dateOfCheckin2)
-                                        DataRow(
-                                            selected:
-                                                selectedData.contains(item),
-                                            onSelectChanged: (isSelected) {
-                                              setState(() {
-                                                final isAdding =
-                                                    isSelected != null &&
-                                                        isSelected;
-                                                isAdding
-                                                    ? selectedData.add(item)
-                                                    : selectedData.remove(item);
-                                              });
-                                            },
-                                            cells: <DataCell>[
-                                              for (var item2 in item.sublist(0))
-                                                DataCell(Text(item2)),
-                                            ]),
-                                  ]
-                                : <DataRow>[
-                                    for (var item in liveData2)
-                                      if (item[2].startsWith(
-                                          lastNameController.text.trim()))
-                                        DataRow(
-                                            selected:
-                                                selectedData.contains(item),
-                                            onSelectChanged: (isSelected) {
-                                              setState(() {
-                                                final isAdding =
-                                                    isSelected != null &&
-                                                        isSelected;
-                                                isAdding
-                                                    ? selectedData.add(item)
-                                                    : selectedData.remove(item);
-                                              });
-                                            },
-                                            cells: <DataCell>[
-                                              for (var item2 in item.sublist(0))
-                                                DataCell(Text(item2)),
-                                            ]),
-                                  ]),
+                                    ? <DataRow>[
+                                        for (var item in liveData2)
+                                          if (item[11] == dateOfCheckin2)
+                                            DataRow(
+                                                selected:
+                                                    selectedData.contains(item),
+                                                onSelectChanged: (isSelected) {
+                                                  setState(() {
+                                                    final isAdding =
+                                                        isSelected != null &&
+                                                            isSelected;
+                                                    isAdding
+                                                        ? selectedData.add(item)
+                                                        : selectedData
+                                                            .remove(item);
+                                                  });
+                                                },
+                                                cells: <DataCell>[
+                                                  for (var item2
+                                                      in item.sublist(0))
+                                                    DataCell(Text(item2)),
+                                                ]),
+                                      ]
+                                    : <DataRow>[
+                                        for (var item in liveData2)
+                                          if (item[2].startsWith(
+                                              lastNameController.text.trim()))
+                                            DataRow(
+                                                selected:
+                                                    selectedData.contains(item),
+                                                onSelectChanged: (isSelected) {
+                                                  setState(() {
+                                                    final isAdding =
+                                                        isSelected != null &&
+                                                            isSelected;
+                                                    isAdding
+                                                        ? selectedData.add(item)
+                                                        : selectedData
+                                                            .remove(item);
+                                                  });
+                                                },
+                                                cells: <DataCell>[
+                                                  for (var item2
+                                                      in item.sublist(0))
+                                                    DataCell(Text(item2)),
+                                                ]),
+                                      ]),
                   ),
                 ],
               );
