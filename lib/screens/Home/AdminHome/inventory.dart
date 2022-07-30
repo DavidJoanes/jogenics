@@ -263,7 +263,7 @@ class _InventoryState extends State<Inventory> {
                                       SnackBar(
                                           backgroundColor: primaryColor2,
                                           content: Text(
-                                              "Operation succeeded. Please wait..")));
+                                              "Operation succeeded. Please refresh..")));
                                   Navigator.of(context).pop();
                                   setState(() {
                                     productController.text = '';

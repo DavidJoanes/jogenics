@@ -39,15 +39,17 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   @override
   void dispose() {
+    hotel = null;
     firstnameController.dispose();
     lastnameController.dispose();
     hotelController.dispose();
+    gender = null;
     emailController.dispose();
     authCodeController.dispose();
     securityAnswerController.dispose();
+    designation = null;
     passwordController.dispose();
     confirmPasswordController.dispose();
-    hotel = null;
     super.dispose();
   }
 

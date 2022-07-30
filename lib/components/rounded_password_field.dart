@@ -20,11 +20,11 @@ class RoundedPasswordFieldA extends StatefulWidget {
 }
 
 class _RoundedPasswordFieldAState extends State<RoundedPasswordFieldA> {
-  bool isObscurePassword = true;
-  late var isObscurePasswordIcon1 =
-      const Icon(Icons.visibility_off_rounded, color: primaryColor);
-  late var isObscurePasswordIcon2 =
-      const Icon(Icons.remove_red_eye_rounded, color: primaryColor);
+  late bool isObscurePassword = false;
+  var isObscurePasswordIcon1 =
+      Icon(Icons.visibility_off_rounded, color: primaryColor);
+  var isObscurePasswordIcon2 =
+      Icon(Icons.remove_red_eye_rounded, color: primaryColor);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _RoundedPasswordFieldAState extends State<RoundedPasswordFieldA> {
             widget.controller.text.isNotEmpty ? isObscurePassword : false,
         controller: widget.controller,
         // onChanged: widget.onChanged,
-        keyboardType: TextInputType.emailAddress,
+        keyboardType: TextInputType.text,
         validator: (value) => value == '' ? 'Password cannot be blank!' : null,
         cursorColor: primaryColor,
         decoration: InputDecoration(
@@ -81,7 +81,7 @@ class _RoundedPasswordFieldA2State extends State<RoundedPasswordFieldA2> {
       child: TextFormField(
         obscureText: true,
         controller: widget.controller,
-        keyboardType: TextInputType.emailAddress,
+        keyboardType: TextInputType.text,
         validator: (value) => value == '' ? 'Password cannot be blank!' : null,
         cursorColor: primaryColor,
         decoration: InputDecoration(
@@ -111,10 +111,10 @@ class RoundedPasswordFieldB extends StatefulWidget {
 }
 
 class _RoundedPasswordFieldBState extends State<RoundedPasswordFieldB> {
-  bool isObscurePassword = true;
-  late var isObscurePasswordIcon1 =
+  late bool isObscurePassword = false;
+  var isObscurePasswordIcon1 =
       const Icon(Icons.visibility_off_rounded, color: primaryColor);
-  late var isObscurePasswordIcon2 =
+  var isObscurePasswordIcon2 =
       const Icon(Icons.remove_red_eye_rounded, color: primaryColor);
 
   @override
@@ -129,7 +129,7 @@ class _RoundedPasswordFieldBState extends State<RoundedPasswordFieldB> {
             obscureText:
                 widget.controller.text.isNotEmpty ? isObscurePassword : false,
             controller: widget.controller,
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: TextInputType.text,
             cursorColor: primaryColor,
             decoration: InputDecoration(
               labelText: widget.name,
@@ -246,10 +246,10 @@ class RoundedRetypePasswordField extends StatefulWidget {
 }
 
 class _RoundedRetypePasswordFieldState extends State<RoundedRetypePasswordField> {
-  bool isObscurePassword = true;
-  late var isObscurePasswordIcon1 =
+  late bool isObscurePassword = false;
+  var isObscurePasswordIcon1 =
       const Icon(Icons.visibility_off_rounded, color: primaryColor);
-  late var isObscurePasswordIcon2 =
+  var isObscurePasswordIcon2 =
       const Icon(Icons.remove_red_eye_rounded, color: primaryColor);
 
   @override
@@ -262,7 +262,7 @@ class _RoundedRetypePasswordFieldState extends State<RoundedRetypePasswordField>
         obscureText:
             widget.controller2.text.isNotEmpty ? isObscurePassword : false,
         controller: widget.controller2,
-        keyboardType: TextInputType.emailAddress,
+        keyboardType: TextInputType.text,
         validator: (value) {
           if (value == '') return 'Password cannot be blank!';
           if (value != widget.controller1.text) {
@@ -315,7 +315,7 @@ class _RoundedConfirmPasswordFieldState extends State<RoundedConfirmPasswordFiel
       child: TextFormField(
         obscureText: true,
         controller: widget.controller2,
-        keyboardType: TextInputType.emailAddress,
+        keyboardType: TextInputType.text,
         validator: (value) {
           if (value == '') return 'Password cannot be blank!';
           if (value != widget.controller1.text) {

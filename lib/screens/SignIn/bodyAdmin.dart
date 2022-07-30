@@ -258,15 +258,13 @@ class _RightSideState extends State<RightSide> {
                         text1: 'Forgot password ?',
                         text2: 'Reset',
                         onTap: () {
-                          // var x = '00000';
-                          // print(x.hashCode);
                           Navigator.push(
                             context,
                             CustomPageRoute(widget: ResetPasswordBody()),
                           );
                         },
                       ),
-                      AlreadyHaveAnAccountCheck2a(
+                      AlreadyHaveAnAccountCheck(
                         press: () {},
                       ),
                       SizedBox(height: size.height * 0.05),

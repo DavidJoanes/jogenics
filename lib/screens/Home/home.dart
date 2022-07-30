@@ -93,47 +93,51 @@ class _HomeBodyState extends State<HomeBody> {
           Positioned(
             top: size.height * 0.4,
             left: size.width * 0.25,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                RoundedButtonHome(
-                  text: 'Admin',
-                  icon: Icon(
-                    Icons.admin_panel_settings_rounded,
-                    size: size.width * 0.05,
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      isAdmin = true;
-                    });
-                    await Navigator.push(
-                      context,
-                      CustomPageRoute(widget: SignInBodyAdmin()),
-                    );
-                  },
-                ),
-                SizedBox(width: size.width * 0.1),
-                RoundedButtonHome(
-                  text: 'User',
-                  icon: Icon(
-                    Icons.supervised_user_circle_rounded,
-                    size: size.width * 0.05,
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      isAdmin = false;
-                    });
-                    await Navigator.push(
-                      context,
-                      CustomPageRoute(widget: SignInBodyUser()),
-                    );
-                  },
-                ),
-              ],
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  for (var data in segments)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: RoundedButtonHome(
+                        text: data["title"],
+                        icon: Icon(
+                          data["icon"],
+                          size: size.width * 0.04,
+                        ),
+                        onPressed: () async {
+                        data["title"] == "Admin"
+                            ? setState(() {
+                                isAdmin = true;
+                              })
+                            : setState(() {
+                                isAdmin = false;
+                              });
+                          await Navigator.push(
+                            context,
+                            CustomPageRoute(widget: data["nextPage"]),
+                          );
+                        },
+                      ),
+                    ),
+                ],
             ),
           ),
         ]),
       ),
     );
   }
+
+  List segments = [
+    {
+      "title": "Admin",
+      "icon": Icons.admin_panel_settings_rounded,
+      "nextPage": SignInBodyAdmin()
+    },
+    {
+      "title": "User",
+      "icon": Icons.supervised_user_circle_rounded,
+      "nextPage": SignInBodyUser()
+    },
+  ];
 }

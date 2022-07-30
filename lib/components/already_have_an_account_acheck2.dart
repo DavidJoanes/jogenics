@@ -5,9 +5,9 @@ import 'package:JoGenics/screens/SignUp/body.dart';
 import 'package:flutter/material.dart';
 import 'package:JoGenics/constants.dart';
 
-class AlreadyHaveAnAccountCheck2a extends StatelessWidget {
+class AlreadyHaveAnAccountCheck extends StatelessWidget {
   final Function press;
-  const AlreadyHaveAnAccountCheck2a({
+  const AlreadyHaveAnAccountCheck({
     Key? key,
     required this.press,
   }) : super(key: key);
@@ -23,7 +23,7 @@ class AlreadyHaveAnAccountCheck2a extends StatelessWidget {
             children: [
               GestureDetector(
                 child: const Text(
-                  "Don't have an Account ?",
+                  "Don't have an account ?",
                   style: TextStyle(
                     color: Colors.black54,
                     fontWeight: FontWeight.bold,
