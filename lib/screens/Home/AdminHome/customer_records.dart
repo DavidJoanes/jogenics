@@ -556,8 +556,6 @@ class _CustomerRecordsState extends State<CustomerRecords> {
             child: Icon(Icons.refresh_rounded),
             label: 'Refresh (Time stamp)',
             onTap: () async {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text("Please wait..")));
               setState(() {
                 employeeFullNameController.text = '';
                 isSearchEmployeeTimeStamp1 = null;

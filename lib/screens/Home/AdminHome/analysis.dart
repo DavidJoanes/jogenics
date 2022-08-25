@@ -467,18 +467,18 @@ class _BuildBottomState extends State<BuildBottom> {
   ];
   late int indexForMonthsOfBestSellers = 0;
 
-  late Set drinks = {};
-  late List drinks2 = [];
-  late List drinks3 = [];
-  late List totalDrinks = [];
+  late Set products_ordered_for_month = {};
+  late List total_orders_for_month = [];
+  late List products_ordered_for_month_as_list = [];
+  late List total_number_of_each_product = [];
   late num totalIncomeForItem = 0;
 
   // function to get each drink sold and their quantities sold respestively
   fetchDrinksSold(month, year) {
-    drinks = {};
-    drinks2 = [];
-    drinks3 = [];
-    totalDrinks = [];
+    products_ordered_for_month = {};
+    total_orders_for_month = [];
+    products_ordered_for_month_as_list = [];
+    total_number_of_each_product = [];
     totalIncomeForItem = 0;
     if (month == 'jan') {
       month = '01';
@@ -509,46 +509,45 @@ class _BuildBottomState extends State<BuildBottom> {
       if (year == item['date'].split('-')[2]) {
         if (month == item['date'].split('-')[1]) {
           for (var item2 in item['cartalog']) {
-            drinks.add(item2[0]);
+            products_ordered_for_month.add(item2[0]);
           }
         }
       }
     }
-    for (var data in drinks) {
-      drinks3.add(data);
+    for (var data in products_ordered_for_month) {
+      products_ordered_for_month_as_list.add(data);
     }
-    for (var item in drinks) {
+    for (var item in products_ordered_for_month) {
       for (var item2 in db.InvoicesRecord) {
         if (year == item2['date'].split('-')[2]) {
           if (month == item2['date'].split('-')[1]) {
             for (var item3 in item2['cartalog']) {
               if (item3[0] == item) {
-                drinks2.add(item3);
+                total_orders_for_month.add(item3);
               }
             }
           }
         }
       }
     }
-    for (var item in drinks) {
+    for (var item in products_ordered_for_month) {
       totalIncomeForItem = 0;
-      for (var item2 in drinks2.where((element) => element[0] == item)) {
+      for (var item2
+          in total_orders_for_month.where((element) => element[0] == item)) {
         totalIncomeForItem += int.parse(item2[1]);
       }
-      totalDrinks.add(totalIncomeForItem.toInt());
+      total_number_of_each_product.add(totalIncomeForItem.toInt());
     }
-    // print(totalDrinks);
-    // print(totalDrinks.length);
   }
 
   List<charts.Series<chartmodel.BarChartModel, String>> _createSampleData() {
     var data = [
-      for (var item1 in db.InvoicesRecord)
-        for (var item2 in item1['cartalog'])
-          chartmodel.BarChartModel(
-              '${item2[0]}',
-              totalDrinks[drinks3.indexOf(item2[0])],
-              charts.ColorUtil.fromDartColor(primaryColor2))
+      for (var item2 in total_orders_for_month)
+        chartmodel.BarChartModel(
+            '${item2[0]}',
+            total_number_of_each_product[
+                products_ordered_for_month_as_list.indexOf(item2[0])],
+            charts.ColorUtil.fromDartColor(primaryColor2))
     ];
 
     return [
@@ -660,7 +659,7 @@ class _BuildBottomState extends State<BuildBottom> {
             padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
             child: SizedBox(
               height: size.height * 0.5,
-              child: drinks.isNotEmpty
+              child: products_ordered_for_month_as_list.isNotEmpty
                   ? BuildBarChart2(dataList: _createSampleData())
                   : Center(
                       child: Text('NIL',
