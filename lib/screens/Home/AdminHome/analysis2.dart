@@ -235,7 +235,7 @@ class _Analysis2State extends State<Analysis2> {
                       CircleAvatar(
                         radius: size.width * 0.08,
                         backgroundColor: Colors.white,
-                        backgroundImage: AssetImage('assets/images/money5.jpg'),
+                        backgroundImage: AssetImage('assets/images/money6.jpg'),
                       ),
                       SizedBox(height: size.height * 0.03),
                       Padding(
